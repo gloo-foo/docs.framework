@@ -1,0 +1,9 @@
+{
+  "baseURL": "https://example.org/",
+  "title": "framework",
+  "publishDir": "_site",
+  "enableRobotsTXT": true,
+  "params": {
+    "description": "Public documentation for gloo-foo/framework."
+  }
+}
