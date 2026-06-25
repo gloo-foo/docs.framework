@@ -5,8 +5,7 @@
 #
 #     git mv .github/workflows/pages.yml.disabled .github/workflows/pages.yml
 #
-# It builds ONLY the `public/` Hugo site; the `private/` folder is never built
-# or published.
+# It builds the Hugo site at the repo root — every doc in this repo is public.
 name: pages
 
 on:
@@ -34,11 +33,11 @@ jobs:
         with:
           hugo-version: latest
           extended: true
-      - name: Build public/ site
-        run: hugo --minify --source public --baseURL "${{ steps.pages.outputs.base_url }}/"
+      - name: Build site
+        run: hugo --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: public/_site
+          path: _site
 
   deploy:
     needs: build

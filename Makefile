@@ -10,12 +10,12 @@ help: ## Show this help
 
 .PHONY: serve
 serve: ## Preview the public docs locally
-	hugo server --source $(here)public
+	hugo server --source $(here)
 
 .PHONY: build
-build: ## Build the public docs site into public/_site
-	hugo --minify --source $(here)public
+build: ## Build the docs site into _site
+	hugo --minify --source $(here)
 
 .PHONY: clean
 clean: ## Remove the built site
-	rm -rf $(here)public/_site $(here)public/resources
+	rm -rf $(here)_site $(here)resources
