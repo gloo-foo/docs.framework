@@ -27,16 +27,19 @@ wg.Wait()
 ## Documentation
 
 ### Framework Analysis
+
 - **[CONCURRENCY_QUICK_REFERENCE.md](CONCURRENCY_QUICK_REFERENCE.md)** - Quick reference guide with safe/unsafe patterns
 - **[CONCURRENCY_SUMMARY.md](CONCURRENCY_SUMMARY.md)** - Executive summary with recommendations
 - **[CONCURRENCY_ANALYSIS.md](CONCURRENCY_ANALYSIS.md)** - Comprehensive framework-level technical analysis
 
 ### Command-Specific Analysis
+
 - **[COMMAND_CONCURRENCY_ANALYSIS.md](COMMAND_CONCURRENCY_ANALYSIS.md)** - Analysis of specific commands (awk, uniq, etc.)
 
 ## Running the Demonstrations
 
 ### Concurrency Demo
+
 Shows working patterns and potential issues:
 
 ```bash
@@ -44,6 +47,7 @@ go run concurrency_demo.go
 ```
 
 This demonstrates:
+
 - ✅ Multiple commands running in parallel
 - ⚠️ Output interleaving with shared I/O
 - ✅ Pipeline composition with io.Pipe
@@ -51,6 +55,7 @@ This demonstrates:
 - ✅ Synchronized output wrapper
 
 ### Race Condition Demo
+
 Shows race conditions that would occur with improper usage:
 
 ```bash
@@ -60,6 +65,7 @@ go run -race race_demo.go
 Run with the `-race` flag to see Go's race detector in action.
 
 ### Tests
+
 Run the test suite:
 
 ```bash
@@ -75,6 +81,7 @@ go test -race -v
 ## What Works ✅
 
 1. **Multiple independent command instances in parallel**
+
    ```go
    go yup.Run(cat.Cat("file1.txt"))
    go yup.Run(grep.Grep("pattern", "file2.txt"))
@@ -82,6 +89,7 @@ go test -race -v
    ```
 
 2. **Error handling in concurrent execution**
+
    ```go
    var wg sync.WaitGroup
    for _, file := range files {
@@ -100,7 +108,6 @@ go test -race -v
    - Independent `Inputs` structures
    - Separate file handles
    - No shared mutable state
-
 
 ## What Doesn't Work ❌
 
@@ -143,6 +150,7 @@ Both are safe to use in concurrent goroutines.
 ### Sequential Line Processing Is Intentional
 
 Commands process lines one at a time, maintaining order:
+
 - Preserves line numbers (critical for awk's `NR`)
 - Maintains output order
 - Simplifies implementation
@@ -169,21 +177,21 @@ Commands process lines one at a time, maintaining order:
 
 ### ✅ Goroutine-Safe Components
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| `Command` interface | ✅ Safe | Stateless interface |
-| `Inputs[T, O]` | ✅ Safe per-instance | Immutable after creation |
-| `Initialize()` | ✅ Safe | Creates independent instances |
-| Helper functions | ✅ Safe | Return independent commands |
-| `Executor()` method | ✅ Safe | Can be called multiple times |
+| Component           | Status               | Notes                         |
+| ------------------- | -------------------- | ----------------------------- |
+| `Command` interface | ✅ Safe              | Stateless interface           |
+| `Inputs[T, O]`      | ✅ Safe per-instance | Immutable after creation      |
+| `Initialize()`      | ✅ Safe              | Creates independent instances |
+| Helper functions    | ✅ Safe              | Return independent commands   |
+| `Executor()` method | ✅ Safe              | Can be called multiple times  |
 
 ### ⚠️ Considerations
 
-| Aspect | Status | Notes |
-|--------|--------|-------|
-| Shared stdout | ⚠️ Interleaves | Use SyncWriter if needed |
-| Awk Context | ⚠️ Sequential | `NR`, `Variables` are single-threaded |
-| File I/O | ✅ Safe | Each instance opens own handles |
+| Aspect        | Status         | Notes                                 |
+| ------------- | -------------- | ------------------------------------- |
+| Shared stdout | ⚠️ Interleaves | Use SyncWriter if needed              |
+| Awk Context   | ⚠️ Sequential  | `NR`, `Variables` are single-threaded |
+| File I/O      | ✅ Safe        | Each instance opens own handles       |
 
 ## Testing Coverage
 
@@ -224,6 +232,7 @@ Commands process lines one at a time, maintaining order:
 ## Contributing
 
 This repository serves as:
+
 - **Documentation** of concurrency capabilities
 - **Testing** of concurrent usage patterns
 - **Examples** for users wanting concurrent processing
@@ -238,4 +247,3 @@ Same as the yupsh framework.
 
 - [yupsh framework](https://github.com/gloo-foo/framework)
 - [yupsh commands](https://github.com/yupsh)
-

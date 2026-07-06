@@ -4,7 +4,7 @@ title: The-Pipeline-Model
 
 # The Pipeline Model
 
-*Audience: everyone. This is the conceptual foundation the rest of the wiki builds on.*
+_Audience: everyone. This is the conceptual foundation the rest of the wiki builds on._
 
 A gloo pipeline is always the same shape:
 
@@ -29,11 +29,11 @@ A stream is the wire between stages. Conceptually it's a sequence of items, each
 
 A consumer has exactly three operations, and all three are leak-free:
 
-| Operation | Use |
-|---|---|
-| range over `Chan()` | low-level iteration (Command Authors only) |
-| `Collect() ([]T, error)` | gather every item into a slice |
-| `Discard()` | abandon a stream you won't finish reading |
+| Operation                | Use                                        |
+| ------------------------ | ------------------------------------------ |
+| range over `Chan()`      | low-level iteration (Command Authors only) |
+| `Collect() ([]T, error)` | gather every item into a slice             |
+| `Discard()`              | abandon a stream you won't finish reading  |
 
 There is deliberately **no bare "stop"** method — see [why](Concurrency-and-Lifecycle#why-there-is-no-stop).
 
@@ -82,7 +82,7 @@ Two consequences worth internalizing:
 
 ## Two execution models
 
-Gloo gives you two ways to assemble a pipeline. They differ in *when* type checking happens and *whether* the result is reusable.
+Gloo gives you two ways to assemble a pipeline. They differ in _when_ type checking happens and _whether_ the result is reusable.
 
 ### Immutable values — checked at compile time
 
@@ -96,7 +96,7 @@ If `parse` produced a type `double` couldn't accept, your code **wouldn't compil
 
 ### The fluent builder — checked at build time
 
-`Chain` and `Run` offer a fluent, type-*changing* syntax:
+`Chain` and `Run` offer a fluent, type-_changing_ syntax:
 
 ```go
 gloo.Chain(src).To(grep).To(sort).Sink(out)

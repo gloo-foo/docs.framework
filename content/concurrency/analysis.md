@@ -17,6 +17,7 @@ title: Concurrency Analysis
 ### ✅ Safe for Concurrent Use
 
 #### 1. Command Interface (`yup.Command`)
+
 ```go
 type Command interface {
     Executor() CommandExecutor
@@ -24,11 +25,13 @@ type Command interface {
 ```
 
 **Status**: ✅ **Goroutine-Safe**
+
 - Pure interface with no shared state
 - Each command instance is independent
 - Executor returns a function, doesn't hold mutable state
 
 **Usage**:
+
 ```go
 // Safe: Different goroutines can create and execute different commands
 go yup.Run(cat.Cat("file1.txt"))
@@ -36,6 +39,7 @@ go yup.Run(grep.Grep("pattern", "file2.txt"))
 ```
 
 #### 2. Inputs[T, O] Structure
+
 ```go
 type Inputs[T any, O any] struct {
     Positional []T
@@ -47,11 +51,13 @@ type Inputs[T any, O any] struct {
 ```
 
 **Status**: ✅ **Goroutine-Safe (per instance)**
+
 - Immutable after initialization
 - Each command gets its own Inputs instance
 - No shared mutable state between commands
 
 **Note**: Each command instance is independent and goroutine-safe
+
 ```go
 // ✅ SAFE: Create separate command instances
 go func() {
@@ -71,11 +77,13 @@ go func() {
 ```
 
 #### 3. Initialize Function
+
 ```go
 func Initialize[T any, O any](parameters ...any) Inputs[T, O]
 ```
 
 **Status**: ✅ **Goroutine-Safe**
+
 - Called internally by command constructors (e.g., `cat.Cat()`, `awk.Awk()`)
 - Creates new instances each time a command is created
 - No shared state between command instances
@@ -88,11 +96,13 @@ func Initialize[T any, O any](parameters ...any) Inputs[T, O]
 #### 4. Helper Functions (LineTransform, AccumulateAndProcess, etc.)
 
 **Status**: ✅ **Goroutine-Safe**
+
 - Each creates independent command instances
 - No shared state across invocations
 - Closures capture command-specific state
 
 **Example**:
+
 ```go
 // ✅ SAFE: Each command has its own state
 func (c command) Executor() yup.CommandExecutor {
@@ -132,6 +142,7 @@ func processFiles(files []string) {
 ```
 
 **Why it works**:
+
 - Each command has its own Inputs instance
 - Each command has its own file handles
 - No shared state between commands
@@ -163,6 +174,7 @@ func (c *statefulLineCommand) Executor() CommandExecutor {
 ```
 
 **Issues**:
+
 1. `lineNum++` is not atomic
 2. `stdout` writes are not synchronized
 3. User-provided functions may have shared state
@@ -203,6 +215,7 @@ cmd2.Executor()(ctx, r, os.Stdout, os.Stderr)
    - ⚠️ Shared I/O streams (stdout/stderr) will interleave
 
 2. **Add examples**:
+
    ```go
    // examples/concurrency/parallel_commands_test.go
    func ExampleParallelCommands() {
@@ -285,6 +298,7 @@ func (c *parallelLineTransformCommand) Executor() CommandExecutor {
 ```
 
 **Challenges**:
+
 - **Order preservation**: Output may need to maintain input order
 - **Error handling**: How to collect and report errors from workers
 - **Backpressure**: Need buffered channels and proper coordination
@@ -310,6 +324,7 @@ func SyncWriter(w io.Writer) io.Writer {
 ```
 
 **Usage**:
+
 ```go
 func (c command) Executor() yup.CommandExecutor {
     return func(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer) error {
@@ -326,7 +341,9 @@ func (c command) Executor() yup.CommandExecutor {
 ## I/O Specific Concerns
 
 ### 1. bufio.Scanner
+
 **Status**: ⚠️ **Not goroutine-safe**
+
 ```go
 // Current usage (safe):
 scanner := bufio.NewScanner(stdin)
@@ -345,13 +362,17 @@ for scanner.Scan() {
 ```
 
 ### 2. io.Reader
+
 **Status**: ⚠️ **Implementation-dependent**
+
 - Most io.Reader implementations are not goroutine-safe
 - `os.File` has some internal synchronization but concurrent reads can interleave
 - Safe approach: Single reader goroutine, distribute via channels
 
 ### 3. io.Writer (stdout/stderr)
+
 **Status**: ⚠️ **Unbuffered writes are "atomic" but can interleave**
+
 ```go
 // Each fmt.Fprintln is atomic, but output interleaves:
 go fmt.Fprintln(stdout, "line 1")
@@ -368,7 +389,9 @@ go fmt.Fprintln(stdout, "line 2")
 **Solution**: Synchronized wrapper (see Level 2.2 above)
 
 ### 4. File Handles
+
 **Status**: ✅ **Safe per-instance**
+
 - Each command opens its own file handles
 - No sharing between command instances
 - Proper cleanup with defer/Close()
@@ -380,6 +403,7 @@ go fmt.Fprintln(stdout, "line 2")
 ### Immediate (No Code Changes)
 
 1. **Document current guarantees**:
+
    ```
    # Concurrency
 
@@ -395,6 +419,7 @@ go fmt.Fprintln(stdout, "line 2")
    ```
 
 2. **Add documentation about goroutine safety**:
+
    ```
    ## Goroutine Safety
 
@@ -447,6 +472,7 @@ go fmt.Fprintln(stdout, "line 2")
 **Can the framework support goroutines?**
 
 ✅ **Yes, with caveats:**
+
 - Multiple command instances can run concurrently ✅
 - Individual command internals are sequential by design ⚠️
 - Shared I/O requires synchronization ⚠️
@@ -455,6 +481,7 @@ go fmt.Fprintln(stdout, "line 2")
 **Should you claim "supports goroutines"?**
 
 🎯 **Recommend**: "Goroutine-compatible" with clear documentation:
+
 - Each command instance is independent and can run in a goroutine
 - Commands follow Unix tool semantics (sequential line processing)
 - For parallel processing, create multiple command instances
@@ -462,14 +489,13 @@ go fmt.Fprintln(stdout, "line 2")
 
 **Effort Required for Full Support:**
 
-| Feature | Effort | Value | Priority |
-|---------|--------|-------|----------|
-| Document current state | Low | High | 🔥 **Do Now** |
-| Add parallel examples | Low | Medium | ✅ **Recommended** |
-| Parallel line helpers | Medium | Medium | 🤔 **If Needed** |
-| Synchronized I/O | Medium | High | 🤔 **If Needed** |
+| Feature                | Effort | Value  | Priority           |
+| ---------------------- | ------ | ------ | ------------------ |
+| Document current state | Low    | High   | 🔥 **Do Now**      |
+| Add parallel examples  | Low    | Medium | ✅ **Recommended** |
+| Parallel line helpers  | Medium | Medium | 🤔 **If Needed**   |
+| Synchronized I/O       | Medium | High   | 🤔 **If Needed**   |
 
 > For command-specific considerations, see [COMMAND_CONCURRENCY_ANALYSIS.md](COMMAND_CONCURRENCY_ANALYSIS.md).
 
 **Bottom Line**: The framework is already well-suited for the most common concurrency pattern (running multiple independent commands). More advanced patterns are possible but require careful design and documentation.
-

@@ -6,7 +6,7 @@ title: while
 
 ## Summary
 
-`while` has **no standard Unix equivalent**: it is a gloo-specific stream-control command, and the shell `while` is a language builtin, not a program. There is therefore nothing to be byte-compatible *with*. Instead, `while` defines its own contract — it reads standard input line by line and runs a body for each line — which the `cmd-while` CLI surfaces by running an operand COMMAND once per line. The behavior below was verified in the Docker integration harness (Debian coreutils), which is assert-only (no GNU reference).
+`while` has **no standard Unix equivalent**: it is a gloo-specific stream-control command, and the shell `while` is a language builtin, not a program. There is therefore nothing to be byte-compatible _with_. Instead, `while` defines its own contract — it reads standard input line by line and runs a body for each line — which the `cmd-while` CLI surfaces by running an operand COMMAND once per line. The behavior below was verified in the Docker integration harness (Debian coreutils), which is assert-only (no GNU reference).
 
 ## Contract
 
@@ -58,6 +58,6 @@ $ printf 'alpha\n' | while definitely-not-a-real-command-xyz; echo $?
 
 No standard Unix `while` binary exists, so there is no reference to diverge from. The notable contract points (not divergences, but behaviors a caller should know):
 
-- The body command is re-executed once per input line (a fresh process per line), and each line is delivered on the command's standard input — the line is *not* passed as an argument.
+- The body command is re-executed once per input line (a fresh process per line), and each line is delivered on the command's standard input — the line is _not_ passed as an argument.
 - Exactly one trailing newline is trimmed from each body command's standard output before it becomes the replacement line; bodies that emit multiple lines therefore widen the stream.
 - A missing COMMAND operand yields the sentinel `no command given` (exit 1); a body command that fails to run or exits non-zero propagates as exit 1.

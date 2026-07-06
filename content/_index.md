@@ -20,8 +20,8 @@ That's the whole idea: a **source** of data, a chain of **commands** that transf
 
 Built on [rill](https://github.com/destel/rill) for stream plumbing and [afero](https://github.com/spf13/afero) for filesystem abstraction.
 
-| | |
-|---|---|
+|  |  |
+| --- | --- |
 | **Module** | `github.com/gloo-foo/framework` |
 | **Package** | `gloo` (+ subpackage `gloo-foo/framework/patterns`) |
 | **API reference** | [pkg.go.dev/github.com/gloo-foo/framework](https://pkg.go.dev/github.com/gloo-foo/framework) |
@@ -50,13 +50,13 @@ Hold that picture and the rest of the framework falls into place. The four types
 
 Gloo has two audiences. Pick your track — they share the vocabulary above but touch different parts of the API.
 
-### 🧑‍🍳 Command Users — *compose and run*
+### 🧑‍🍳 Command Users — _compose and run_
 
 You take prebuilt commands and wire them into pipelines. You never see `rill`, never write a `FuncCommand`, never touch a raw stream. This is the product; everything else exists to make it pleasant.
 
 → **[For Command Users](For-Command-Users)**
 
-### 🔧 Command Authors — *build the commands*
+### 🔧 Command Authors — _build the commands_
 
 You write the commands Users compose. You pick a **pattern** and supply only your algorithm — the pattern owns all stream wiring, channels, and cancellation.
 
@@ -103,7 +103,7 @@ To run a pipeline as a real Unix filter (stdin → stdout), use [`Pump`](For-Com
 ## Map of the wiki
 
 | Page | What it covers | For |
-|---|---|---|
+| --- | --- | --- |
 | **[The Pipeline Model](The-Pipeline-Model)** | The four core types, how data flows, lazy vs. eager wiring, values vs. builders | Everyone |
 | **[For Command Users](For-Command-Users)** | `Run`, `Chain`, `Compose`, `Pipe`, `Pump`; the error model | Users |
 | **[For Command Authors](For-Command-Authors)** | The pattern catalog + decision matrix; building commands; `FuncCommand` for exotic cases | Authors |

@@ -29,6 +29,7 @@ type Context struct {
 ```
 
 **Status**: ⚠️ **NOT Goroutine-Safe**
+
 - Mutable state (`Fields`, `NR`, `Variables`)
 - No synchronization primitives
 - Designed for single-threaded line processing
@@ -57,6 +58,7 @@ type Program interface {
 ```
 
 **Status**: ⚠️ **Implementation-Dependent**
+
 - Interface itself is safe
 - Safety depends on whether Program implementations mutate shared state
 - Current usage pattern is single-threaded
@@ -93,6 +95,7 @@ for scanner.Scan() {
 **Goal**: Enable parallel line processing in awk
 
 **Challenge**: Awk's design is inherently sequential:
+
 - `NR` (line number) is meaningful in order
 - `Variables` may have dependencies between lines
 - `BEGIN` and `END` blocks are sequential by nature
@@ -138,17 +141,21 @@ type MapReduceProgram interface {
 Commands with similar considerations to awk:
 
 ### `uniq` Command
+
 - Compares consecutive lines
 - Requires sequential processing to detect duplicates
 - Cannot parallelize without buffering entire input
 
 ### `nl` Command
+
 - Numbers lines sequentially
 - Line numbers must be in order
 - Naturally sequential
 
 ### Commands with `NR`-like State
+
 Any command that:
+
 - Maintains line counters
 - Compares current line to previous
 - Has BEGIN/END blocks
@@ -163,20 +170,24 @@ These all benefit from the framework's sequential line processing design.
 These commands can run many instances concurrently without issues:
 
 ### `cat`
+
 - Pure streaming, no state
 - Multiple instances can process different files simultaneously
 
 ### `grep`
+
 - Pattern matching per line
 - No cross-line state
 - Highly parallelizable at the command instance level
 
 ### `tr`
+
 - Character translation per line
 - No state between lines
 - Perfect for concurrent execution
 
 ### `cut`
+
 - Field extraction
 - No cross-line dependencies
 - Safe for parallel instances
@@ -219,10 +230,9 @@ func (c command) Executor() yup.CommandExecutor {
 ## Summary
 
 | Command Type | Concurrency Level | Recommendation |
-|--------------|-------------------|----------------|
+| --- | --- | --- |
 | Stateless (cat, grep, tr) | ✅ High | Run multiple instances |
 | Stateful (awk, uniq, nl) | ⚠️ Sequential | One instance, sequential processing |
 | Custom with state | ⚠️ Varies | Use framework helpers, document behavior |
 
 The framework's design naturally supports the most useful concurrency pattern: **running multiple independent command instances**, while keeping individual command implementations simple and sequential.
-

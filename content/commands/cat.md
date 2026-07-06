@@ -19,7 +19,7 @@ b
 # Number all output lines (-n): 6-wide right-aligned number, a TAB, then the line
 $ printf 'a\n\nb\n' | cat -n
      1	a
-     2	
+     2
      3	b
 
 # Number nonempty output lines (-b); blank lines are emitted unnumbered.

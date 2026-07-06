@@ -6,7 +6,7 @@ title: awk
 
 ## Summary
 
-Implements awk's record/field processing model (BEGIN, per-record condition + action, END, field splitting, `NR`/`NF`/`FS`/`OFS`/`RS`, variables) as a Go API, but the awk *language* — patterns and actions written as text — is not parsed; programs are expressed in Go via the `Program` interface.
+Implements awk's record/field processing model (BEGIN, per-record condition + action, END, field splitting, `NR`/`NF`/`FS`/`OFS`/`RS`, variables) as a Go API, but the awk _language_ — patterns and actions written as text — is not parsed; programs are expressed in Go via the `Program` interface.
 
 ## Key Behaviors
 

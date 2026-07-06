@@ -11,6 +11,7 @@ title: Concurrency Summary
 ### What Works Today (No Changes Needed)
 
 1. **Multiple independent commands can run concurrently**
+
    ```go
    // ✅ SAFE: Each command instance is independent
    go yup.Run(cat.Cat("file1.txt"))
@@ -19,6 +20,7 @@ title: Concurrency Summary
    ```
 
 2. **Processing with error handling**
+
    ```go
    // ✅ SAFE: Handle errors in concurrent execution
    var wg sync.WaitGroup
@@ -39,7 +41,6 @@ title: Concurrency Summary
    - Each gets its own `Inputs` via `Initialize` (called internally)
    - Independent file handles and I/O streams
 
-
 ### What Doesn't Work (By Design)
 
 1. **Parallel line processing within a single command**
@@ -56,7 +57,7 @@ title: Concurrency Summary
 ### Framework Level: ✅ Goroutine-Safe
 
 | Component | Safety | Notes |
-|-----------|--------|-------|
+| --- | --- | --- |
 | `Command` interface | ✅ Safe | Stateless interface |
 | `Inputs[T, O]` struct | ✅ Safe per-instance | Immutable after creation |
 | `Initialize()` | ✅ Safe | Called once per command instance |
@@ -65,7 +66,7 @@ title: Concurrency Summary
 ### Command Level: ⚠️ Instance-Dependent
 
 | Pattern | Safety | Notes |
-|---------|--------|-------|
+| --- | --- | --- |
 | Stateless transforms | ✅ Safe | Multiple instances can run concurrently |
 | Stateful processing | ⚠️ Sequential | `NR`, variables, etc. are sequential by design |
 | File operations | ✅ Safe | Each instance opens its own handles |
@@ -111,7 +112,7 @@ The framework follows a **command-per-goroutine** model:
 
 Add to framework README:
 
-```markdown
+````markdown
 ## Concurrency
 
 ### Running Commands Concurrently
@@ -131,6 +132,7 @@ for _, file := range files {
 }
 wg.Wait()
 ```
+````
 
 ### Important: One Instance, One Execution
 
@@ -149,10 +151,9 @@ go yup.Run(cat.Cat("file.txt"))  // New instance each time
 
 ### Output Interleaving
 
-When multiple commands write to the same output stream concurrently,
-their output may interleave. Use synchronized wrappers if ordered
-output is required.
-```
+When multiple commands write to the same output stream concurrently, their output may interleave. Use synchronized wrappers if ordered output is required.
+
+````
 
 ### Command Developer Documentation
 
@@ -180,8 +181,9 @@ func (c command) Executor() yup.CommandExecutor {
         return "", false
     }).Executor()
 }
-```
-```
+````
+
+````
 
 ## Effort Assessment for Enhanced Concurrency
 
@@ -233,10 +235,10 @@ Run the demo with:
 ```bash
 cd examples
 go run concurrency_demo.go
-```
+````
 
 Run race detection with:
+
 ```bash
 go run -race race_demo.go
 ```
-

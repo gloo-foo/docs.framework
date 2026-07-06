@@ -4,7 +4,7 @@ title: For-Command-Users
 
 # For Command Users
 
-*Audience: you compose prebuilt commands into pipelines and run them. You never touch `rill`, a `FuncCommand`, or a raw stream.*
+_Audience: you compose prebuilt commands into pipelines and run them. You never touch `rill`, a `FuncCommand`, or a raw stream._
 
 A **command** is a value — built once, reused anywhere. Your job is to wire commands between a source and a sink. Gloo gives you four ways to compose and one way to run a pipeline as a Unix filter. This page covers each, with guidance on when to reach for which.
 
@@ -44,7 +44,7 @@ result, err := gloo.Chain(src).
 ```
 
 | Terminal | Returns | Use |
-|---|---|---|
+| --- | --- | --- |
 | `.Collect()` | `(any, error)` — a `[]T` as `any` | gather every item |
 | `.Sink(sink)` | `(any, error)` — the sink's result | write out, count, reduce |
 | `.ForEach(fn)` | `error` | run a side-effect per item |
@@ -77,7 +77,7 @@ gloo.Run(src1, sink1, clean)
 gloo.Run(src2, sink2, clean)
 ```
 
-Each `.To()` returns a *new* `Pipeline`; the original is never mutated.
+Each `.To()` returns a _new_ `Pipeline`; the original is never mutated.
 
 ## `Pipe` — binary, type-changing, compile-time-checked
 
@@ -111,13 +111,13 @@ func main() {
 
 ## Choosing a composition style
 
-| Want… | Use |
-|---|---|
-| the quickest run of source→cmds→sink | `Run` |
-| a fluent, readable, type-*changing* chain | `Chain` |
-| a reusable building block, all one type | `Compose` |
-| a reusable, type-changing pair, compiler-checked | `Pipe` |
-| to ship it as a stdin→stdout tool | `Pump` / `PumpBytes` |
+| Want…                                            | Use                  |
+| ------------------------------------------------ | -------------------- |
+| the quickest run of source→cmds→sink             | `Run`                |
+| a fluent, readable, type-_changing_ chain        | `Chain`              |
+| a reusable building block, all one type          | `Compose`            |
+| a reusable, type-changing pair, compiler-checked | `Pipe`               |
+| to ship it as a stdin→stdout tool                | `Pump` / `PumpBytes` |
 
 ---
 

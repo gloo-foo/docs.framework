@@ -14,7 +14,7 @@ Compatible with GNU `nl` for explicit body-numbering styles; the default body st
 # Number every line (-b a): width-6 right-justified field, TAB separator
 $ printf 'alpha\n\nbeta\n' | nl -b a
      1	alpha
-     2	
+     2
      3	beta
 
 # Narrower number field (-w)

@@ -21,28 +21,13 @@ jq.Jq("--arg", "k", "v", "$k")   // forks: jq --arg k v $k
 jq.Jq("-n", "now")               // forks: jq -n now
 ```
 
-Pipeline input is written to jq's stdin and jq's stdout becomes the Command's
-output stream, exactly as `jq` behaves as a stage in a shell pipe. Stderr passes
-through to the parent. Non-zero exit codes propagate as errors. A downstream stop
-or context cancellation closes the pipes and signals the child (SIGTERM,
-escalating to SIGKILL after a grace period), mirroring shell SIGPIPE semantics —
-so `jq | Take(3)` terminates jq promptly.
+Pipeline input is written to jq's stdin and jq's stdout becomes the Command's output stream, exactly as `jq` behaves as a stage in a shell pipe. Stderr passes through to the parent. Non-zero exit codes propagate as errors. A downstream stop or context cancellation closes the pipes and signals the child (SIGTERM, escalating to SIGKILL after a grace period), mirroring shell SIGPIPE semantics — so `jq | Take(3)` terminates jq promptly.
 
 ## Intentional Divergences
 
-There is no standard parity contract beyond "fork jq and forward." The library
-constructor's contract is total argument-vector passthrough:
+There is no standard parity contract beyond "fork jq and forward." The library constructor's contract is total argument-vector passthrough:
 
-- **Full flag passthrough.** Unlike a constrained `urfave/cli` front end, the
-  `Jq(args...)` constructor forwards every token verbatim — filter expressions
-  and flags alike (`-c`, `-r`, `-n`, `-s`, `--arg`, `--argjson`, `--slurpfile`,
-  …). The wrapper neither defines nor rejects flags; jq sees the exact vector it
-  was given.
-- **No filter is jq's own behavior.** A bare `Jq()` (no arguments) forks `jq`
-  with no filter; the resulting behavior (jq reading and echoing input under its
-  default filter) is jq's, not the wrapper's — the wrapper imposes no usage
-  error of its own.
+- **Full flag passthrough.** Unlike a constrained `urfave/cli` front end, the `Jq(args...)` constructor forwards every token verbatim — filter expressions and flags alike (`-c`, `-r`, `-n`, `-s`, `--arg`, `--argjson`, `--slurpfile`, …). The wrapper neither defines nor rejects flags; jq sees the exact vector it was given.
+- **No filter is jq's own behavior.** A bare `Jq()` (no arguments) forks `jq` with no filter; the resulting behavior (jq reading and echoing input under its default filter) is jq's, not the wrapper's — the wrapper imposes no usage error of its own.
 
-The wrapper follows the gloo pipeline model: a finite upstream source is streamed
-to jq's stdin, so it is intended for pipeline composition rather than interactive
-use.
+The wrapper follows the gloo pipeline model: a finite upstream source is streamed to jq's stdin, so it is intended for pipeline composition rather than interactive use.

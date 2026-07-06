@@ -4,7 +4,7 @@ title: Errors-and-Testing
 
 # Errors & Testing
 
-*Audience: everyone. How errors travel through a pipeline, and how to test commands without real I/O.*
+_Audience: everyone. How errors travel through a pipeline, and how to test commands without real I/O._
 
 ---
 
@@ -57,7 +57,7 @@ if errors.Is(err, gloo.ErrFileNotFound) { … }
 ### The errors gloo can emit
 
 | Sentinel | When |
-|---|---|
+| --- | --- |
 | `ErrStopReading` | the silent downstream-stop cause (you rarely match this) |
 | `ErrFileNotFound` | a `File` positional couldn't be opened |
 | `patterns.ErrSubprocessStart`, `ErrSubprocessReadStdout`, `ErrSubprocessStdinPipe`, `ErrSubprocessStdoutPipe`, `ErrSubprocess` | a `Subprocess` failed at the named stage |
@@ -67,7 +67,7 @@ if errors.Is(err, gloo.ErrFileNotFound) { … }
 The reflection-based fluent builder (`Chain`/`Run`) reports a malformed pipeline as a returned error — **never a panic** — surfaced by the terminal:
 
 | Sentinel | When |
-|---|---|
+| --- | --- |
 | `ErrNotSource` | the `Chain` argument isn't a `Source` |
 | `ErrNotCommand` | a `.To()` argument isn't a `Command` |
 | `ErrNotSink` | a `.Sink()` argument isn't a `Sink` |
@@ -81,7 +81,7 @@ _, err := gloo.Chain(src).To(wrongTypedCmd).Collect()
 if errors.Is(err, gloo.ErrStageTypeMismatch) { … } // and the message names both types
 ```
 
-> Prefer `Pipe`/`Compose` when you want these caught at *compile* time instead — see [the two execution models](The-Pipeline-Model#two-execution-models).
+> Prefer `Pipe`/`Compose` when you want these caught at _compile_ time instead — see [the two execution models](The-Pipeline-Model#two-execution-models).
 
 ---
 
@@ -109,13 +109,13 @@ func TestShout(t *testing.T) {
 }
 ```
 
-| Need | Use |
-|---|---|
-| synthetic input | `gloo.StreamOf(items…)` or `gloo.SliceSource(items)` |
-| byte-pipeline input | `gloo.ByteReaderSource([]io.Reader{r})` |
-| a fake filesystem | `afero.NewMemMapFs()` — never the real disk |
-| the result | `.Collect()` (slice) or a sink |
-| a godoc example | `patterns.MustRun(cmd)` with an `// Output:` matcher |
+| Need                | Use                                                  |
+| ------------------- | ---------------------------------------------------- |
+| synthetic input     | `gloo.StreamOf(items…)` or `gloo.SliceSource(items)` |
+| byte-pipeline input | `gloo.ByteReaderSource([]io.Reader{r})`              |
+| a fake filesystem   | `afero.NewMemMapFs()` — never the real disk          |
+| the result          | `.Collect()` (slice) or a sink                       |
+| a godoc example     | `patterns.MustRun(cmd)` with an `// Output:` matcher |
 
 ### Assert behavior, not coverage
 

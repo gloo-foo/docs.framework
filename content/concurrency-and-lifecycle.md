@@ -4,11 +4,11 @@ title: Concurrency-and-Lifecycle
 
 # Concurrency & Lifecycle
 
-*Audience: everyone — it's short, and it's the guarantee that makes gloo trustworthy. Authors writing a `FuncCommand` should read all of it.*
+_Audience: everyone — it's short, and it's the guarantee that makes gloo trustworthy. Authors writing a `FuncCommand` should read all of it._
 
 A gloo pipeline runs every stage in its own goroutine and streams items through concurrently. That raises the obvious question: **when a pipeline ends — normally, early, or under cancellation — does everything shut down, or do goroutines leak?**
 
-The answer is that gloo makes clean teardown the *only* possibility. There is no API by which you can leak a producer. This page explains how.
+The answer is that gloo makes clean teardown the _only_ possibility. There is no API by which you can leak a producer. This page explains how.
 
 ---
 
@@ -31,7 +31,7 @@ Gloo reproduces this exactly. When a downstream stage stops reading, every stage
 A `Stream[T]` gives a consumer exactly three things to do, and **all three are leak-free**:
 
 | Operation | Meaning |
-|---|---|
+| --- | --- |
 | range over `Chan()` to completion | read every item |
 | `Collect() ([]T, error)` | gather every item into a slice |
 | `Discard()` | abandon a stream you won't finish reading |
@@ -42,7 +42,7 @@ If you read a stream to the end (via `Chan()` or `Collect()`), teardown is autom
 
 You might expect a `Stop()` method to "just stop the upstream." Gloo deliberately doesn't have one, and that's a safety feature.
 
-Stopping the upstream is only half of a correct early-exit. The producers between you and the source — pure transform stages like `Map` and `Filter` — have no cancellation hook of their own; they end only when their *input* closes. If you signalled "stop" but then stopped reading, a producer blocked mid-send would wait forever on a send nobody receives. **That's the leak.** The correct early-exit is always *stop **and** drain*: signal the upstream, then keep reading until the channel closes so every blocked producer can run to completion.
+Stopping the upstream is only half of a correct early-exit. The producers between you and the source — pure transform stages like `Map` and `Filter` — have no cancellation hook of their own; they end only when their _input_ closes. If you signalled "stop" but then stopped reading, a producer blocked mid-send would wait forever on a send nobody receives. **That's the leak.** The correct early-exit is always _stop **and** drain_: signal the upstream, then keep reading until the channel closes so every blocked producer can run to completion.
 
 `Discard()` **is** that fused "stop and drain." Because the unsafe half (stop-without-drain) is never exposed, you can't write the leak. The high-level terminals — `Run`, `Chain().Collect()/.Sink()/.ForEach()`, and `Into` — all call `Discard` for you on the early-exit and error paths. You only manage it by hand when consuming a raw `Stream`, and even then the only tool you have is the safe one:
 
@@ -69,7 +69,7 @@ So a consumer can tell "I stopped this" (no error) from "something cancelled thi
 ## What's safe to share, and what isn't
 
 | Value | Guarantee |
-|---|---|
+| --- | --- |
 | `Command`, `Source`, `Sink` | **Immutable values.** Safe to copy, alias, and run concurrently across pipelines. |
 | `Pipe`, `Compose`/`Pipeline`, `FuncCommand` | Immutable values — same guarantee. |
 | `Stateful*` commands | Reusable because the factory mints fresh state per `Execute`. |
@@ -77,7 +77,7 @@ So a consumer can tell "I stopped this" (no error) from "something cancelled thi
 | `FluentPipeline` (from `Chain`) | **Single-owner, mutable, consumed once.** Build → one terminal → discard. Don't share across goroutines. |
 | Sinks (`WriteTo`, `ByteWriteTo`) | **Single consumer only** — they wrap a stateful `bufio.Writer`. |
 
-The headline: the things you *compose with* are immutable and freely shareable; the things you *consume* (a live stream, a fluent builder) are single-owner. This is what lets you define a command once and run it in a hundred pipelines without a second thought.
+The headline: the things you _compose with_ are immutable and freely shareable; the things you _consume_ (a live stream, a fluent builder) are single-owner. This is what lets you define a command once and run it in a hundred pipelines without a second thought.
 
 ---
 
@@ -85,8 +85,8 @@ The headline: the things you *compose with* are immutable and freely shareable; 
 
 If you write a `FuncCommand`, you produce a stream with one of two primitives. Both inherit everything above — you don't re-implement teardown, you opt into it.
 
-- **`Generate(ctx, producer)`** — an *origin* producer (a `Source`, no upstream).
-- **`GenerateFrom(ctx, in, producer)`** — a producer *derived from* an input stream; a downstream `Discard` cancels your producer **and** tears `in` down, so one `Discard` collapses the whole chain (upstream only).
+- **`Generate(ctx, producer)`** — an _origin_ producer (a `Source`, no upstream).
+- **`GenerateFrom(ctx, in, producer)`** — a producer _derived from_ an input stream; a downstream `Discard` cancels your producer **and** tears `in` down, so one `Discard` collapses the whole chain (upstream only).
 
 Your `producer` emits with `send(v) bool` and `sendErr(err)`. The contract is one rule:
 
