@@ -2,13 +2,13 @@
 title: awk
 ---
 
-# Awk Command Compatibility
+## Awk Command Compatibility
 
-## Summary
+### Summary
 
 Implements awk's record/field processing model (BEGIN, per-record condition + action, END, field splitting, `NR`/`NF`/`FS`/`OFS`/`RS`, variables) as a Go API, but the awk _language_ — patterns and actions written as text — is not parsed; programs are expressed in Go via the `Program` interface.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Print a single field by position: awk '{print $2}'
@@ -78,7 +78,7 @@ banana
 cherry
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - Not an awk-language interpreter. There is no lexer/parser for awk source: patterns and actions are not written as `/regex/ { print $1 }` text. A program is a Go value implementing `Program` (`Begin`/`Condition`/`Action`/`End`), and `SimpleProgram` supplies pass-through defaults. The `# awk ...` lines above are equivalence notes, not accepted input.
 - Only the four phases exist. The whole pattern/action machinery reduces to: `Begin` (BEGIN), a single boolean `Condition` (the pattern), a single `Action` returning `(output, emit)` (the action), and `End` (END). There are no multiple pattern/action pairs, no range patterns (`/a/,/b/`), and no per-pattern blocks beyond this one condition + one action.

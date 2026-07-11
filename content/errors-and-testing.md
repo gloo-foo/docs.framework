@@ -2,13 +2,13 @@
 title: Errors-and-Testing
 ---
 
-# Errors & Testing
+## Errors & Testing
 
 _Audience: everyone. How errors travel through a pipeline, and how to test commands without real I/O._
 
 ---
 
-## How errors flow
+### How errors flow
 
 A gloo error doesn't unwind a call stack — it travels **in the stream** as an item. Each item a stage produces is either a value or an error. The first error a consumer encounters stops the pipeline and is returned:
 
@@ -33,7 +33,7 @@ patterns.Map(func(line string) (string, error) {
 
 ---
 
-## Sentinel errors
+### Sentinel errors
 
 The framework's errors are **sentinels** you match structurally with `errors.Is`, never by string. The package defines a single error type:
 
@@ -54,7 +54,7 @@ return ErrFileNotFound.With(err, "file", name) // "file not found: <cause>: file
 if errors.Is(err, gloo.ErrFileNotFound) { … }
 ```
 
-### The errors gloo can emit
+#### The errors gloo can emit
 
 | Sentinel | When |
 | --- | --- |
@@ -62,7 +62,7 @@ if errors.Is(err, gloo.ErrFileNotFound) { … }
 | `ErrFileNotFound` | a `File` positional couldn't be opened |
 | `patterns.ErrSubprocessStart`, `ErrSubprocessReadStdout`, `ErrSubprocessStdinPipe`, `ErrSubprocessStdoutPipe`, `ErrSubprocess` | a `Subprocess` failed at the named stage |
 
-### Fluent builder errors
+#### Fluent builder errors
 
 The reflection-based fluent builder (`Chain`/`Run`) reports a malformed pipeline as a returned error — **never a panic** — surfaced by the terminal:
 
@@ -85,11 +85,11 @@ if errors.Is(err, gloo.ErrStageTypeMismatch) { … } // and the message names bo
 
 ---
 
-## Testing commands
+### Testing commands
 
 Commands are designed to be tested with **in-memory streams** — no filesystem, no stdin/stdout, no subprocesses (except when testing `Subprocess` itself).
 
-### The basic shape
+#### The basic shape
 
 Feed a synthetic stream, run the command, collect the result, assert exact values:
 
@@ -117,7 +117,7 @@ func TestShout(t *testing.T) {
 | the result          | `.Collect()` (slice) or a sink                       |
 | a godoc example     | `patterns.MustRun(cmd)` with an `// Output:` matcher |
 
-### Assert behavior, not coverage
+#### Assert behavior, not coverage
 
 The framework holds itself to 100% statement coverage — but coverage is the floor, not the goal. A test should **fail if the behavior is wrong**, not merely execute the code. Concretely:
 
@@ -126,7 +126,7 @@ The framework holds itself to 100% statement coverage — but coverage is the fl
 - For early-stop / cancellation, prove the **producer actually exited** — wait on a `done` channel the producer closes, rather than sleeping or counting goroutines. (See the `verification/` suite's `waitClosed`/`mustExit` helpers.)
 - For "fresh state per run," **reuse the same command value across two pipelines** and assert their results are independent.
 
-### Worked references
+#### Worked references
 
 - **Runnable godoc examples:** [`example_test.go`](https://github.com/gloo-foo/framework/blob/main/example_test.go)
 - **End-to-end pipelines (the real proof):** [`verification/`](https://github.com/gloo-foo/framework/tree/main/verification) — especially `shell_pipeline_test.go` (full value oracles) and `cancellation_test.go` (deterministic leak detection)

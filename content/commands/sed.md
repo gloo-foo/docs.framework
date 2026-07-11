@@ -2,13 +2,13 @@
 title: sed
 ---
 
-# Sed Command Compatibility
+## Sed Command Compatibility
 
-## Summary
+### Summary
 
 Partially compatible with GNU `sed`: it implements only the `s///` substitution command (with the `g`, `i`, `p`, and `N` flags) and uses Go's RE2 regular-expression engine, not GNU's BRE/ERE. Plain substitutions whose syntax is shared by both engines match GNU exactly; anything relying on BRE syntax, GNU `\1`/`&` replacements, addressing, or non-`s` commands diverges.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Basic first-occurrence substitution
@@ -47,7 +47,7 @@ $ sed 's/world/universe/' in.txt
 hello universe
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - **Regular-expression flavor is Go RE2, not GNU BRE.** RE2 is ERE-like, so `+`, `?`, `|`, `(` and `)` are operators with no backslash. GNU `sed`'s default is BRE, where those are literals (and groups are `\( \)`). Consequences:
   - `s/[0-9]+/N/` on `foo123` yields `fooN` here, but GNU BRE treats `+` literally and leaves the line unchanged.

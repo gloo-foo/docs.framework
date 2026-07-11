@@ -2,13 +2,13 @@
 title: diff
 ---
 
-# Diff Command Compatibility
+## Diff Command Compatibility
 
-## Summary
+### Summary
 
 Largely divergent from GNU `diff`: `diff` compares two files **positionally** (line N vs line N) rather than computing an LCS edit script, and its output format (ed-style `<`/`>` by default, single-hunk unified under `-u`) does not match any GNU `diff` mode. Only the identical-files case (no output, exit 0) is byte-identical to GNU.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Identical files: no output, exit 0 (matches GNU diff exactly)
@@ -56,7 +56,7 @@ $ diff --unified a.txt b.txt
  c
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - Comparison is **positional**: line N of FILE1 is compared to line N of FILE2. GNU `diff` computes a longest-common-subsequence (LCS) edit script, so on inserts/deletes in the middle of a file the hunks and counts differ from GNU. This is the documented behavior of this module, not a bug.
 - The default output is ed-style `< line` / `> line` rows. GNU `diff`'s default is a normal diff with `1,3c1,3`-style change commands; there is no GNU mode that produces these exact bytes.

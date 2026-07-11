@@ -2,13 +2,13 @@
 title: basename
 ---
 
-# Basename Command Compatibility
+## Basename Command Compatibility
 
-## Summary
+### Summary
 
 Highly compatible with GNU `basename`. Output is byte-identical to GNU `basename` for plain paths, the `NAME SUFFIX` form, `-a`/`--multiple`, `-s`/`--suffix`, `-z`/`--zero`, and trailing-slash/degenerate paths (verified in the Docker integration harness against Debian coreutils).
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Plain path: strip the leading directory components
@@ -46,6 +46,6 @@ $ basename -az /x/y /p/q | od -An -c
    y  \0   q  \0
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 None — output matches GNU `basename` for the implemented flags (`-a`/`--multiple`, `-s`/`--suffix`, `-z`/`--zero`) and operand grammars (`NAME [SUFFIX]` and `OPTION... NAME...`). Single-letter flags bundle GNU-style (`-az` == `-a -z`). With no operand, `cmd-basename` exits non-zero with a `missing operand` message; a third bare operand without `-a`/`-s` is rejected as an `extra operand`, matching GNU's rejection of surplus operands.

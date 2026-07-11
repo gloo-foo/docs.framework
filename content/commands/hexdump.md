@@ -2,13 +2,13 @@
 title: hexdump
 ---
 
-# Hexdump Command Compatibility
+## Hexdump Command Compatibility
 
-## Summary
+### Summary
 
 Partially compatible with util-linux `hexdump`, and only for the canonical (`-C`) display of a single short input line. cmd-hexdump is line-oriented: it splits stdin on newlines and renders each line independently. This diverges substantially from util-linux `hexdump`, which treats the input as one continuous byte stream. The only byte-identical case is empty input (both produce nothing). All other behavior is documented as an intentional divergence (verified in the Docker integration harness against util-linux `hexdump` from `bsdextrautils` on Debian).
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Default mode: space-separated lowercase hex bytes, one row per input line.
@@ -39,7 +39,7 @@ $ printf 'A\x00B\x7f\n' | hexdump -C
 $ printf '' | hexdump -C
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 cmd-hexdump implements a deliberately minimal, line-oriented subset. It exposes only one flag, `-C` / `--canonical`; the util-linux format flags `-b` (octal bytes), `-c` (ASCII chars), `-d` (decimal), `-o` (octal), `-x` (hex words), and the `-n` / `-s` / `-v` length/offset/verbose controls are not implemented. Within what it does implement, it differs from util-linux `hexdump` as follows:
 

@@ -2,13 +2,13 @@
 title: ls
 ---
 
-# Ls Command Compatibility
+## Ls Command Compatibility
 
-## Summary
+### Summary
 
 Partially compatible with GNU `ls`: the default one-name-per-line listing matches `ls -1` exactly, but `-a`, `-R`, and `-l` diverge by design (see below).
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Default: one entry per line, sorted, hidden (dot) entries excluded.
@@ -47,7 +47,7 @@ $ ls -l /only
 -rw-r--r-- 5 sized.txt
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - `-a` lists dot-prefixed entries but omits the synthetic `.` and `..` entries that GNU `ls -a` prints; `afero.ReadDir` does not surface them.
 - `-R` emits a single flat list of paths relative to the listing root, sorted lexically. It does not print the per-directory `dir:` headers or the blank-line grouping that GNU `ls -R` produces.

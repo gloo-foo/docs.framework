@@ -2,7 +2,7 @@
 title: Concurrency-and-Lifecycle
 ---
 
-# Concurrency & Lifecycle
+## Concurrency & Lifecycle
 
 _Audience: everyone — it's short, and it's the guarantee that makes gloo trustworthy. Authors writing a `FuncCommand` should read all of it._
 
@@ -12,7 +12,7 @@ The answer is that gloo makes clean teardown the _only_ possibility. There is no
 
 ---
 
-## The shell analogy
+### The shell analogy
 
 Think of a shell pipeline:
 
@@ -26,7 +26,7 @@ Gloo reproduces this exactly. When a downstream stage stops reading, every stage
 
 ---
 
-## A consumer's three safe operations
+### A consumer's three safe operations
 
 A `Stream[T]` gives a consumer exactly three things to do, and **all three are leak-free**:
 
@@ -38,7 +38,7 @@ A `Stream[T]` gives a consumer exactly three things to do, and **all three are l
 
 If you read a stream to the end (via `Chan()` or `Collect()`), teardown is automatic. If you want to stop early, you call `Discard()`.
 
-### Why there is no `Stop`
+#### Why there is no `Stop`
 
 You might expect a `Stop()` method to "just stop the upstream." Gloo deliberately doesn't have one, and that's a safety feature.
 
@@ -54,7 +54,7 @@ results, err := stream.Collect()
 
 ---
 
-## Silent stop vs. surfaced cancellation
+### Silent stop vs. surfaced cancellation
 
 Not every "the stream ended" is a failure. Gloo distinguishes two causes, because a shell does:
 
@@ -66,7 +66,7 @@ So a consumer can tell "I stopped this" (no error) from "something cancelled thi
 
 ---
 
-## What's safe to share, and what isn't
+### What's safe to share, and what isn't
 
 | Value | Guarantee |
 | --- | --- |
@@ -81,7 +81,7 @@ The headline: the things you _compose with_ are immutable and freely shareable; 
 
 ---
 
-## For authors: producing a stream
+### For authors: producing a stream
 
 If you write a `FuncCommand`, you produce a stream with one of two primitives. Both inherit everything above — you don't re-implement teardown, you opt into it.
 
@@ -107,6 +107,6 @@ For a pure rill transform, `WrapFrom(ch, in)` does the same wiring with no produ
 
 ---
 
-## In one sentence
+### In one sentence
 
 Teardown propagates upstream automatically, the only early-exit you can express is the safe one (`Discard` = stop + drain), immutable values are freely shareable, and live consumers are single-owner — so a gloo pipeline shuts down as cleanly as a shell pipe, by construction, with no way to leak a goroutine.

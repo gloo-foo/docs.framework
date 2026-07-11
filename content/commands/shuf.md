@@ -2,13 +2,13 @@
 title: shuf
 ---
 
-# Shuf Command Compatibility
+## Shuf Command Compatibility
 
-## Summary
+### Summary
 
 Behaviorally compatible with GNU `shuf` for the implemented flags. Because `shuf` writes a random permutation, output is never byte-identical to GNU `shuf`; compatibility is verified by the defining INVARIANTS (permutation, count, range, echo) in the Docker integration harness against Debian coreutils.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Permutation: shuffling a fixed set, then sorting, returns the input set
@@ -37,7 +37,7 @@ red
 $ shuf --seed 42 -e a b c
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - Ordering is random by design. To make a run reproducible, use `--seed N` to seed the shuffle deterministically. This is a divergence from GNU `shuf`, which seeds reproducibility via `--random-source=FILE`; `--random-source` is not implemented.
 - `-o`/`--output` (write to a file instead of stdout) and `-z`/`--zero-terminated` (NUL line delimiter) are not implemented; output goes to stdout, newline-delimited.

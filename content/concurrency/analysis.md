@@ -2,9 +2,9 @@
 title: Concurrency Analysis
 ---
 
-# gloo-foo Framework Concurrency Analysis
+## gloo-foo Framework Concurrency Analysis
 
-## Executive Summary
+### Executive Summary
 
 **Current State**: The framework CAN support goroutines with careful implementation, but it's not explicitly designed for it. The architecture is fundamentally **goroutine-safe at the framework level** but requires **command-specific attention** for concurrent execution.
 
@@ -12,11 +12,11 @@ title: Concurrency Analysis
 
 ---
 
-## Framework Level Analysis
+### Framework Level Analysis
 
-### ✅ Safe for Concurrent Use
+#### ✅ Safe for Concurrent Use
 
-#### 1. Command Interface (`yup.Command`)
+##### 1. Command Interface (`yup.Command`)
 
 ```go
 type Command interface {
@@ -38,7 +38,7 @@ go yup.Run(cat.Cat("file1.txt"))
 go yup.Run(grep.Grep("pattern", "file2.txt"))
 ```
 
-#### 2. Inputs[T, O] Structure
+##### 2. Inputs[T, O] Structure
 
 ```go
 type Inputs[T any, O any] struct {
@@ -76,7 +76,7 @@ go func() {
 }()
 ```
 
-#### 3. Initialize Function
+##### 3. Initialize Function
 
 ```go
 func Initialize[T any, O any](parameters ...any) Inputs[T, O]
@@ -93,7 +93,7 @@ func Initialize[T any, O any](parameters ...any) Inputs[T, O]
 
 **Consideration**: File handles are NOT shared, so concurrent commands reading the same file will have independent file descriptors and positions.
 
-#### 4. Helper Functions (LineTransform, AccumulateAndProcess, etc.)
+##### 4. Helper Functions (LineTransform, AccumulateAndProcess, etc.)
 
 **Status**: ✅ **Goroutine-Safe**
 
@@ -119,9 +119,9 @@ func (c command) Executor() yup.CommandExecutor {
 
 ---
 
-## Concurrency Scenarios
+### Concurrency Scenarios
 
-### Scenario 1: Multiple Commands in Parallel ✅
+#### Scenario 1: Multiple Commands in Parallel ✅
 
 **Status**: ✅ **Works Today**
 
@@ -149,7 +149,7 @@ func processFiles(files []string) {
 
 **Limitation**: Output interleaving (stdout/stderr from different goroutines will mix)
 
-### Scenario 2: Parallel Line Processing Within a Command ❌
+#### Scenario 2: Parallel Line Processing Within a Command ❌
 
 **Status**: ❌ **Does Not Work (Race Conditions)**
 
@@ -179,7 +179,7 @@ func (c *statefulLineCommand) Executor() CommandExecutor {
 2. `stdout` writes are not synchronized
 3. User-provided functions may have shared state
 
-### Scenario 3: Pipeline Parallelism ⚠️
+#### Scenario 3: Pipeline Parallelism ⚠️
 
 **Status**: ⚠️ **Partially Possible**
 
@@ -203,9 +203,9 @@ cmd2.Executor()(ctx, r, os.Stdout, os.Stderr)
 
 ---
 
-## Required Changes for Full Concurrency Support
+### Required Changes for Full Concurrency Support
 
-### Level 1: Documentation Only (Effort: Low, Value: High)
+#### Level 1: Documentation Only (Effort: Low, Value: High)
 
 **Goal**: Clarify what's safe today
 
@@ -234,11 +234,11 @@ cmd2.Executor()(ctx, r, os.Stdout, os.Stderr)
    }
    ```
 
-### Level 2: Framework Enhancements (Effort: Medium, Value: Medium)
+#### Level 2: Framework Enhancements (Effort: Medium, Value: Medium)
 
 **Goal**: Enable safe concurrent line processing
 
-#### 2.1: Add Parallel Line Transform Helper
+##### 2.1: Add Parallel Line Transform Helper
 
 ```go
 // helpers.go
@@ -303,7 +303,7 @@ func (c *parallelLineTransformCommand) Executor() CommandExecutor {
 - **Error handling**: How to collect and report errors from workers
 - **Backpressure**: Need buffered channels and proper coordination
 
-#### 2.2: Thread-Safe I/O Helpers
+##### 2.2: Thread-Safe I/O Helpers
 
 ```go
 // helpers.go
@@ -338,9 +338,9 @@ func (c command) Executor() yup.CommandExecutor {
 
 ---
 
-## I/O Specific Concerns
+### I/O Specific Concerns
 
-### 1. bufio.Scanner
+#### 1. bufio.Scanner
 
 **Status**: ⚠️ **Not goroutine-safe**
 
@@ -361,7 +361,7 @@ for scanner.Scan() {
 }
 ```
 
-### 2. io.Reader
+#### 2. io.Reader
 
 **Status**: ⚠️ **Implementation-dependent**
 
@@ -369,7 +369,7 @@ for scanner.Scan() {
 - `os.File` has some internal synchronization but concurrent reads can interleave
 - Safe approach: Single reader goroutine, distribute via channels
 
-### 3. io.Writer (stdout/stderr)
+#### 3. io.Writer (stdout/stderr)
 
 **Status**: ⚠️ **Unbuffered writes are "atomic" but can interleave**
 
@@ -388,7 +388,7 @@ go fmt.Fprintln(stdout, "line 2")
 
 **Solution**: Synchronized wrapper (see Level 2.2 above)
 
-### 4. File Handles
+#### 4. File Handles
 
 **Status**: ✅ **Safe per-instance**
 
@@ -398,13 +398,13 @@ go fmt.Fprintln(stdout, "line 2")
 
 ---
 
-## Recommendations
+### Recommendations
 
-### Immediate (No Code Changes)
+#### Immediate (No Code Changes)
 
 1. **Document current guarantees**:
 
-   ```
+   ```text
    # Concurrency
 
    Multiple command instances can run concurrently:
@@ -420,7 +420,7 @@ go fmt.Fprintln(stdout, "line 2")
 
 2. **Add documentation about goroutine safety**:
 
-   ```
+   ```go
    ## Goroutine Safety
 
    ✅ Commands are goroutine-safe when used with yup.Run() or yup.MustRun().
@@ -445,21 +445,21 @@ go fmt.Fprintln(stdout, "line 2")
    wg.Wait()
    ```
 
-### Short Term (Framework Enhancement)
+#### Short Term (Framework Enhancement)
 
-3. **Add optional parallel helpers** for CPU-intensive transformations:
+1. **Add optional parallel helpers** for CPU-intensive transformations:
    - `ParallelLineTransform(fn, workers)`
    - `SyncWriter(io.Writer)`
    - Document trade-offs (order, complexity)
 
-4. **Add examples** showing safe concurrency patterns:
+2. **Add examples** showing safe concurrency patterns:
    - Parallel command execution
    - Pipeline construction with io.Pipe
    - Synchronized output
 
-### Long Term (If Demanded)
+#### Long Term (If Demanded)
 
-5. **Consider a "concurrent" variant** of the framework:
+1. **Consider a "concurrent" variant** of the framework:
    - Separate package: `github.com/yupsh/concurrent`
    - Explicit about ordering guarantees
    - Built-in worker pools and channels
@@ -467,7 +467,7 @@ go fmt.Fprintln(stdout, "line 2")
 
 ---
 
-## Conclusion
+### Conclusion
 
 **Can the framework support goroutines?**
 

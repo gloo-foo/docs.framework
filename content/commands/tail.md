@@ -2,13 +2,13 @@
 title: tail
 ---
 
-# Tail Command Compatibility
+## Tail Command Compatibility
 
-## Summary
+### Summary
 
 Compatible with GNU `tail` for line selection (`-n N`, `-n +N`) and the default last-ten-lines behavior; verified byte-identical in the Docker integration harness against Debian coreutils. Byte mode (`-c N`) and multiple file operands diverge as noted below. Follow mode (`-f`) is not implemented.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Default: the last 10 lines of stdin (or each file)
@@ -51,7 +51,7 @@ $ seq 1 15 | tail -c 6
 15
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - `-c N` (byte mode) emits the trailing bytes as a single stream record, and the line-oriented byte sink appends a record newline — so the raw output ends with **one extra trailing `\n`** versus GNU `tail -c` (GNU emits 6 bytes for `seq 1 15 | tail -c 6`; this implementation emits 7). The visible text is otherwise identical; the difference is masked by any shell `$(...)` capture, which strips trailing newlines.
 - **Multiple file operands are concatenated with no `==> FILE <==` header.** GNU `tail` prints a `==> name <==` banner before each file when more than one is given; this implementation simply concatenates the per-file tails in order. With a single file operand the output matches GNU exactly.

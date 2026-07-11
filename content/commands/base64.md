@@ -2,13 +2,13 @@
 title: base64
 ---
 
-# Base64 Command Compatibility
+## Base64 Command Compatibility
 
-## Summary
+### Summary
 
 Highly compatible with GNU `base64`: encode/decode, `-d`/`--decode`, `-i`/`--ignore-garbage`, and `-w`/`--wrap` (including `-w 0` to disable wrapping and the default wrap of 76) all match GNU byte-for-byte. The one divergence is that input is read line-by-line, so a single trailing newline on the input is dropped before encoding.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Encode stdin (default wrap at column 76)
@@ -39,6 +39,6 @@ $ printf '%s' 'The quick brown fox jumps over the lazy dog.' | base64 | base64 -
 The quick brown fox jumps over the lazy dog.
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - Input is read line-by-line and a single trailing newline is dropped before encoding, so encoding text _with_ a trailing newline yields the same result as encoding it without one. GNU `base64` encodes the trailing newline byte as part of the data. For example, `printf 'hello\n' | base64` yields `aGVsbG8=` here, but `aGVsbG8K` under GNU. Feed input without a trailing newline (`printf '%s'`) for byte-identical parity; all other behavior — encode, decode, `-d`/`--decode`, `-i`/`--ignore-garbage`, and every `-w`/`--wrap` width including the default of 76 and `-w 0` — matches GNU `base64` exactly.

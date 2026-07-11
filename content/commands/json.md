@@ -2,13 +2,13 @@
 title: json
 ---
 
-# Json Command Compatibility
+## Json Command Compatibility
 
-## Summary
+### Summary
 
 There is no single standard Unix `json` binary; `jq` is the closest reference. This command is a focused JSON normalizer/compactor (with sibling selector commands), not a full `jq` expression engine.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Compact + key-sort each input line of JSON (jq -c, with sorted keys like jq -S)
@@ -60,7 +60,7 @@ $ printf '{"name":"Alice","age":30}\n{"name":"Charlie"}\n' | json-select has age
 {"age":30,"name":"Alice"}
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - Not a `jq` expression language. There is no filter DSL — no `.path.to.field`, pipes (`|`), `map`, arithmetic, string interpolation, `reduce`, `to_entries`, functions, or variables. Selection/projection is provided by separate sibling commands (`Decode`, `Pluck`, `Select`) built on a shared streaming core, each composed as a Go pipeline stage rather than a `jq` program string.
 - Compact-only output, with keys always sorted. The root command emits compact JSON like `jq -c` and always sorts object keys like `jq -S`; neither behavior is optional. It does not pretty-print (no `jq` default multi-line indentation), and there is no flag to preserve original key order or indentation. Options are currently deferred (`opt.go` declares an empty `flags` struct).

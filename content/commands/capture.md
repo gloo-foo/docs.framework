@@ -2,13 +2,13 @@
 title: capture
 ---
 
-# Capture Command Compatibility
+## Capture Command Compatibility
 
-## Summary
+### Summary
 
 A gloo-specific structural command with no standard Unix equivalent: it taps a pipeline, copying every line into one or more in-process `io.Writer` buffers while passing the line through unchanged.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Capture the stream into a buffer while it passes through unchanged
@@ -32,7 +32,7 @@ Pipe(Capture(&mid), Capture()) <<< "x\ny"
 # 2 lines passed through; mid -> "x\ny\n"
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 There is no Unix reference for this command; its contract is defined entirely by the framework:
 

@@ -2,7 +2,7 @@
 title: For-Command-Authors
 ---
 
-# For Command Authors
+## For Command Authors
 
 _Audience: you build the commands that [Users](For-Command-Users) compose._
 
@@ -12,7 +12,7 @@ The rule of authoring: **pick a pattern from [`patterns/`](https://github.com/gl
 
 ---
 
-## The pattern catalog
+### The pattern catalog
 
 Each pattern captures one shape of "how input relates to output." Find your command's shape, and the pattern is chosen.
 
@@ -30,18 +30,18 @@ Each pattern captures one shape of "how input relates to output." Find your comm
 | `Tap[T]` | `func(T) error` | pass through, with a side effect | `tee` |
 | `Subprocess` | `name, args…` | shell out to a real process | `perl`, `git` (last resort) |
 
-### Decision shortcuts
+#### Decision shortcuts
 
 - **One line → one line?** `Map`. Need a counter or running state? `StatefulMap`.
 - **Keep some lines?** `Filter`. Need the previous line? `StatefulFilter`.
 - **Need to see _all_ input first** (sort, reverse, tail)? `Accumulate` (same type out) or `Aggregate` (one summary out).
 - **One line becomes many** (or none)? `Expand`.
-- **"I've seen enough"** (stop early)? `Take` / `Head` — and read [why this is special](#early-termination-take).
+- **"I've seen enough"** (stop early)? `Take` / `Head` — and read [why this is special](#early-termination--take).
 - **Just observing** (write a copy, log)? `Tap`.
 
 ---
 
-## Writing a command
+### Writing a command
 
 A command is a constructor that returns a `Command`. Supply the algorithm; that's it.
 
@@ -68,7 +68,7 @@ func WordCount() gloo.Command[string, int] {
 
 Returning an error from your function propagates it down the stream and stops the pipeline — see [how errors flow](Errors-and-Testing#how-errors-flow).
 
-### Stateful commands take a _factory_
+#### Stateful commands take a _factory_
 
 A command is a value that may be reused across many pipelines, possibly concurrently. If a stateful command captured its state directly, two runs would share it. So `StatefulMap` and `StatefulFilter` take a **factory** called **once per `Execute`** — each run gets its own fresh state.
 
@@ -86,7 +86,7 @@ func Nl() gloo.Command[string, string] {
 
 Never close over a mutable variable _outside_ the factory — that's the one way to make a command unsafe to reuse.
 
-### Early termination — `Take`
+#### Early termination — `Take`
 
 `Take(n)` emits the first `n` items and then **stops the upstream** — the SIGPIPE analogue. This is the one thing a `Filter` cannot do: a filter can drop items but can never say "I need nothing more," so a filter-based `head` over a huge or infinite source reads _everything_. `Take` actively tears the producer down, so:
 
@@ -99,7 +99,7 @@ The mechanics behind this — how a downstream stop propagates upstream without 
 
 ---
 
-## Exotic commands — `FuncCommand`
+### Exotic commands — `FuncCommand`
 
 When no pattern fits, drop to `FuncCommand[In, Out]` and build the output stream yourself. This is the _only_ place an author touches `rill`. Two primitives produce a stream while inheriting clean teardown:
 
@@ -131,7 +131,7 @@ The golden rule: **`send` returning `false` means the consumer has walked away �
 
 ---
 
-## Sources
+### Sources
 
 Build a `Source` to feed a pipeline. All filesystem access goes through [`afero.Fs`](https://github.com/spf13/afero) — never `os.Open`. Tests use `afero.NewMemMapFs()`.
 
@@ -148,7 +148,7 @@ Sources are cancellation-aware and handle lines far larger than `bufio.Scanner`'
 
 ---
 
-## Where things belong
+### Where things belong
 
 Per the framework's constitution: stream wiring lives in `framework/`, patterns in `framework/patterns/`, and each command in its own `cmd-*` module. `Subprocess` is a last resort — if an algorithm can be done in pure Go, it must be. New patterns require maintainer approval; exhaust the existing set first.
 

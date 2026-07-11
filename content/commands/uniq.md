@@ -2,13 +2,13 @@
 title: uniq
 ---
 
-# Uniq Command Compatibility
+## Uniq Command Compatibility
 
-## Summary
+### Summary
 
 Highly compatible with GNU `uniq` for the implemented flags. Output is byte-identical to GNU `uniq` for the default collapse, `-c`, `-d`, `-u`, and `-i` (verified in the Docker integration harness against Debian coreutils).
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Collapse each run of ADJACENT identical lines to one line (default).
@@ -44,6 +44,6 @@ b
 $ uniq -c in.txt
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
-None — output matches GNU `uniq` for the implemented flags (`-c`, `-d`, `-u`, `-i`), including the `-c` count field width (`%7d `). The comparison-key offset flags `-f` (skip fields), `-s` (skip characters), and `-w` (compare width) are not yet implemented; within the implemented flags, output is byte-identical to GNU `uniq`.
+None — output matches GNU `uniq` for the implemented flags (`-c`, `-d`, `-u`, `-i`), including the `-c` count field width (`%7d`). The comparison-key offset flags `-f` (skip fields), `-s` (skip characters), and `-w` (compare width) are not yet implemented; within the implemented flags, output is byte-identical to GNU `uniq`.

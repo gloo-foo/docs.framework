@@ -2,13 +2,13 @@
 title: paste
 ---
 
-# Paste Command Compatibility
+## Paste Command Compatibility
 
-## Summary
+### Summary
 
 Compatible with GNU/Unix `paste` on a single input stream; multi-file operands intentionally diverge (this paste concatenates streams rather than merging columns).
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Default (parallel) mode on a single stream is a passthrough: each input line
@@ -31,7 +31,7 @@ $ printf 'w\nx\ny\nz\n' | paste -s -d '-='
 w-x=y-z
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - Multiple file operands in default (parallel) mode are **concatenated into one stream** and passed through line by line — they are not merged side by side into columns. GNU `paste a b` emits tab-separated columns (`a-line<TAB>b-line`); this paste emits every line of `a`, then every line of `b`.
 - Multiple file operands in serial mode (`-s`) join the **whole concatenated stream into a single row**. GNU `paste -s a b` emits one row per file; this paste emits one row for all files combined.

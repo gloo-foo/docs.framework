@@ -2,13 +2,13 @@
 title: tee
 ---
 
-# Tee Command Compatibility
+## Tee Command Compatibility
 
-## Summary
+### Summary
 
 Highly compatible with GNU `tee`. Both the passthrough on stdout and the bytes written to each FILE operand are byte-identical to GNU `tee` for copying, multiple files, and `-a`/`--append` (verified in the Docker integration harness against Debian coreutils).
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Copy stdin to stdout AND to each FILE operand (identity passthrough)
@@ -38,6 +38,6 @@ $ printf 'data\n' | tee
 data
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - `-i` (ignore interrupt signals) is not implemented: this framework models pipelines as streams and has no command-level signal layer, so the flag would be an unobservable no-op. Signal handling belongs to the CLI host, not the Command. For the implemented behavior — passthrough, one or more FILE operands, and `-a`/`--append` — output and file contents match GNU `tee` exactly.

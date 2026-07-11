@@ -2,13 +2,13 @@
 title: find
 ---
 
-# Find Command Compatibility
+## Find Command Compatibility
 
-## Summary
+### Summary
 
 Compatible with the recursive-walk subset of GNU `find`. The `cmd-find` CLI exposes a root `PATH` operand plus the `-type` and `-maxdepth` predicates; the `cmd-find` library additionally supports a `-name` glob that the CLI does not yet surface.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Full-tree recursion from an absolute root (order is filesystem-dependent;
@@ -49,7 +49,7 @@ $ find /work -type f -maxdepth 2 | sort
 /work/sub/c.txt
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - **`.`-rooted paths carry no `./` prefix.** Walking the current directory, GNU `find` prefixes every descendant with `./` (`./a.txt`); `cmd-find` walks via `afero.Walk`, which joins from the bare root, so it emits `a.txt`. The root entry itself (`.`) is identical, and an absolute or named root (e.g. `find /work`) matches GNU exactly.
 - **Traversal order is filesystem-dependent.** Neither GNU `find` nor `cmd-find` guarantees a sorted order; entries within a directory are emitted in the order the filesystem returns them. Compare outputs through `sort`.

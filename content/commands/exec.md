@@ -2,13 +2,13 @@
 title: exec
 ---
 
-# Exec Command Compatibility
+## Exec Command Compatibility
 
-## Summary
+### Summary
 
 `exec` has no standard Unix equivalent. It is a gloo-specific, structural command: an explicit escape hatch that runs an arbitrary external program as a pipeline stage. The input stream is written to the program's stdin and the program's stdout becomes the output stream — exactly the role of a command inside a shell pipe. There is therefore no GNU/Unix `exec` reference to compare against; this document records the command's own verified contract instead.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Direct execution: the program's stdout becomes exec's stdout.
@@ -52,7 +52,7 @@ $ exec -s -q -- sh -c 'echo discarded >&2; printf out'
 out
 ```
 
-## Contract and Flags
+### Contract and Flags
 
 There is no standard Unix command to mirror, so the contract is exec's own:
 
@@ -67,7 +67,7 @@ There is no standard Unix command to mirror, so the contract is exec's own:
 
 When no shell-requiring flag is set the program is executed directly; otherwise it is run through a POSIX shell so the flags can take effect.
 
-## Intentional Divergences
+### Intentional Divergences
 
 There is no standard Unix `exec` utility to diverge from, so "parity" is not applicable. The behaviors worth noting against shell intuition are:
 

@@ -2,13 +2,13 @@
 title: Concurrency Summary
 ---
 
-# gloo-foo Framework Concurrency Support - Executive Summary
+## gloo-foo Framework Concurrency Support - Executive Summary
 
-## Can the Framework Support Goroutines?
+### Can the Framework Support Goroutines?
 
 **YES** ✅ - The framework supports concurrent execution with the following characteristics:
 
-### What Works Today (No Changes Needed)
+#### What Works Today (No Changes Needed)
 
 1. **Multiple independent commands can run concurrently**
 
@@ -41,7 +41,7 @@ title: Concurrency Summary
    - Each gets its own `Inputs` via `Initialize` (called internally)
    - Independent file handles and I/O streams
 
-### What Doesn't Work (By Design)
+#### What Doesn't Work (By Design)
 
 1. **Parallel line processing within a single command**
    - Commands process lines sequentially (matches Unix tool semantics)
@@ -52,9 +52,9 @@ title: Concurrency Summary
    - Multiple goroutines writing to the same stdout will interleave output
    - This is expected Unix behavior but may require synchronized wrappers
 
-## Architecture Analysis
+### Architecture Analysis
 
-### Framework Level: ✅ Goroutine-Safe
+#### Framework Level: ✅ Goroutine-Safe
 
 | Component | Safety | Notes |
 | --- | --- | --- |
@@ -63,7 +63,7 @@ title: Concurrency Summary
 | `Initialize()` | ✅ Safe | Called once per command instance |
 | Helper functions | ✅ Safe | Create independent instances |
 
-### Command Level: ⚠️ Instance-Dependent
+#### Command Level: ⚠️ Instance-Dependent
 
 | Pattern | Safety | Notes |
 | --- | --- | --- |
@@ -72,11 +72,11 @@ title: Concurrency Summary
 | File operations | ✅ Safe | Each instance opens its own handles |
 | I/O operations | ⚠️ Depends | Raw I/O may interleave without synchronization |
 
-## Concurrency Model
+### Concurrency Model
 
 The framework follows a **command-per-goroutine** model:
 
-```
+```text
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
 │ Goroutine 1 │     │ Goroutine 2 │     │ Goroutine 3 │
 ├─────────────┤     ├─────────────┤     ├─────────────┤
@@ -93,7 +93,7 @@ The framework follows a **command-per-goroutine** model:
 
 **NOT** a parallel-line-processing model:
 
-```
+```text
 ❌ This is NOT supported (would break semantic guarantees):
 ┌──────────────────────────────────────┐
 │ Single Command Instance              │
@@ -106,20 +106,20 @@ The framework follows a **command-per-goroutine** model:
 (Order and line numbers would be wrong)
 ```
 
-## Recommendations for Documentation
+### Recommendations for Documentation
 
-### User-Facing Documentation
+#### User-Facing Documentation
 
 Add to framework README:
 
-````markdown
+````````markdown
 ## Concurrency
 
 ### Running Commands Concurrently
 
 Each command instance can run in its own goroutine:
 
-```go
+````go
 var wg sync.WaitGroup
 files := []string{"file1.txt", "file2.txt", "file3.txt"}
 
@@ -131,10 +131,14 @@ for _, file := range files {
     }(file)
 }
 wg.Wait()
-```
+```text
 ````
 
-### Important: One Instance, One Execution
+```````text
+
+``````text
+
+#### Important: One Instance, One Execution
 
 ⚠️ **Do not reuse command instances across goroutines:**
 
@@ -147,20 +151,20 @@ go yup.Run(cmd)  // Same instance used twice
 // ✅ SAFE
 go yup.Run(cat.Cat("file.txt"))
 go yup.Run(cat.Cat("file.txt"))  // New instance each time
-```
+```text
 
-### Output Interleaving
+#### Output Interleaving
 
 When multiple commands write to the same output stream concurrently, their output may interleave. Use synchronized wrappers if ordered output is required.
 
-````
+````text
 
 ### Command Developer Documentation
 
 Add to framework developer docs:
 
 ```markdown
-## Concurrency Considerations for Command Developers
+### Concurrency Considerations for Command Developers
 
 Commands you implement are automatically goroutine-safe for concurrent
 instances, as long as you follow these guidelines:
@@ -181,9 +185,9 @@ func (c command) Executor() yup.CommandExecutor {
         return "", false
     }).Executor()
 }
-````
+````text
 
-````
+`````text
 
 ## Effort Assessment for Enhanced Concurrency
 
@@ -235,10 +239,12 @@ Run the demo with:
 ```bash
 cd examples
 go run concurrency_demo.go
-````
+````text
 
 Run race detection with:
 
 ```bash
 go run -race race_demo.go
 ```
+```````
+````````

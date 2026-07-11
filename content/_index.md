@@ -2,7 +2,7 @@
 title: framework
 ---
 
-# Gloo Framework
+## Gloo Framework
 
 **Fluent shell pipes for Go.** Gloo expresses the Unix pipeline model as type-safe, composable Go values. A command is a value — you assign it, pass it around, and compose it — and the pipeline you build reads like a shell one-liner while staying fully typed, concurrent, and testable without ever touching real I/O.
 
@@ -28,11 +28,11 @@ Built on [rill](https://github.com/destel/rill) for stream plumbing and [afero](
 
 ---
 
-## The one mental model
+### The one mental model
 
 Everything in gloo is this shape:
 
-```
+```text
  Source ──▶ Command ──▶ Command ──▶ … ──▶ Sink
         Stream[A]    Stream[B]      Stream[Y]
 ```
@@ -46,17 +46,17 @@ Hold that picture and the rest of the framework falls into place. The four types
 
 ---
 
-## Which reader are you?
+### Which reader are you?
 
 Gloo has two audiences. Pick your track — they share the vocabulary above but touch different parts of the API.
 
-### 🧑‍🍳 Command Users — _compose and run_
+#### 🧑‍🍳 Command Users — _compose and run_
 
 You take prebuilt commands and wire them into pipelines. You never see `rill`, never write a `FuncCommand`, never touch a raw stream. This is the product; everything else exists to make it pleasant.
 
 → **[For Command Users](For-Command-Users)**
 
-### 🔧 Command Authors — _build the commands_
+#### 🔧 Command Authors — _build the commands_
 
 You write the commands Users compose. You pick a **pattern** and supply only your algorithm — the pattern owns all stream wiring, channels, and cancellation.
 
@@ -66,7 +66,7 @@ Whichever you are, read **[Concurrency & Lifecycle](Concurrency-and-Lifecycle)**
 
 ---
 
-## Sixty-second start
+### Sixty-second start
 
 ```go
 package main
@@ -100,7 +100,7 @@ To run a pipeline as a real Unix filter (stdin → stdout), use [`Pump`](For-Com
 
 ---
 
-## Map of the wiki
+### Map of the wiki
 
 | Page | What it covers | For |
 | --- | --- | --- |
@@ -112,7 +112,7 @@ To run a pipeline as a real Unix filter (stdin → stdout), use [`Pump`](For-Com
 
 ---
 
-## Resources
+### Resources
 
 - **API reference (godoc):** [pkg.go.dev/github.com/gloo-foo/framework](https://pkg.go.dev/github.com/gloo-foo/framework)
 - **Runnable examples:** [`example_test.go`](https://github.com/gloo-foo/framework/blob/main/example_test.go)

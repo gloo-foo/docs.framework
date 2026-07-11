@@ -2,13 +2,13 @@
 title: dirname
 ---
 
-# Dirname Command Compatibility
+## Dirname Command Compatibility
 
-## Summary
+### Summary
 
 Highly compatible with GNU `dirname`. Output is byte-identical to GNU `dirname` for every operand form — absolute paths, relative paths, trailing slashes, multiple operands, and the root/edge cases — verified in the Docker integration harness against Debian coreutils.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Strip the last component of an absolute path
@@ -41,7 +41,7 @@ $ dirname /usr/local/bin/script.sh /var/log/app.log
 /var/log
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - GNU `dirname` requires at least one operand and errors when given none. cmd-dirname instead reads newline-separated paths from standard input when no operands are given, applying the same dirname transform to each line. With one or more operands, behavior is byte-identical to GNU `dirname`.
 - The GNU `-z`/`--zero` flag (NUL-terminate each output line instead of newline) is not implemented; cmd-dirname always separates outputs with newlines.

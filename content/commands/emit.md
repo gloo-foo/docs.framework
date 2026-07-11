@@ -2,13 +2,13 @@
 title: emit
 ---
 
-# Emit Command Compatibility
+## Emit Command Compatibility
 
-## Summary
+### Summary
 
 `emit` is a gloo-specific pipeline source with no standard Unix equivalent; the closest analogy is `echo`/`printf` (or `yes`) used to seed a pipeline with fixed content.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Single line of stdout content emits one item
@@ -29,7 +29,7 @@ output message            # stdout (pipeline stream)
 error message             # stderr (side channel, newline-terminated)
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 There is no Unix `emit`; it is a structural source for the gloo framework rather than a command-line tool. Its contract:
 

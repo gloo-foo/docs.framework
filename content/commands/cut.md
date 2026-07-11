@@ -2,13 +2,13 @@
 title: cut
 ---
 
-# Cut Command Compatibility
+## Cut Command Compatibility
 
-## Summary
+### Summary
 
 Highly compatible with GNU `cut`. Field (`-f`/`-d`), character (`-c`), and byte (`-b`) selection all match GNU, including discrete positions, ranges, the bounded `-N` (from-start) range, and `--complement`. The one divergence is the open-ended `-f N-` field range.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Select a single field with a custom delimiter
@@ -46,7 +46,7 @@ $ printf 'no-delimiter\n' | cut -d : -f 1
 no-delimiter
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - **Open-ended `-f N-` field ranges are not supported.** The command package selects fields by explicit 1-based position, which cannot express an unbounded upper end, so `cut -f 2-` is rejected with a clear error rather than emitting fields 2 through the end. GNU prints field N onward. The bounded forms work: list the fields explicitly (`-f 2,3,4`) or use a from-start range (`-f -3`). Open-ended ranges are fully supported for `-c` and `-b`, which accept a spec string (e.g. `cut -c 3-`).
 - Selected fields, bytes, and characters are emitted in input order, not request order, matching cut(1): `-f 3,1` yields field 1 then field 3.

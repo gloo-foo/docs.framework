@@ -2,13 +2,13 @@
 title: yes
 ---
 
-# Yes Command Compatibility
+## Yes Command Compatibility
 
-## Summary
+### Summary
 
 Compatible with GNU `yes` for the default and single-operand forms (verified byte-for-byte in the Docker integration harness against Debian coreutils, with both streams capped via `head` since `yes` is infinite). cmd-yes adds a non-GNU `-n`/`--count` limit and joins multiple operands with spaces; an explicit empty operand collapses to the default.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Default operand: repeat "y" forever (capped here for display)
@@ -35,7 +35,7 @@ one two three
 one two three
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - `-n COUNT` / `--count COUNT` is a cmd-yes-specific extension with no GNU equivalent: it stops the otherwise-infinite stream after `COUNT` lines. A count of `0` (the default) means repeat forever. GNU `yes` is always infinite and must be bounded externally (e.g. piped to `head`).
 - Multiple operands are joined with a single space and the joined string is repeated. GNU `yes one two three` repeats only the first operand (`one`).

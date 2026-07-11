@@ -2,13 +2,13 @@
 title: join
 ---
 
-# Join Command Compatibility
+## Join Command Compatibility
 
-## Summary
+### Summary
 
 Compatible with GNU `join` for the implemented subset: the default join on field 1 and the `-t` field separator. Output is byte-identical to GNU `join` for those cases (verified in the Docker integration harness against Debian coreutils, under `LC_ALL=C`). Both inputs must be sorted on the join field, as with GNU `join`.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Default join on the first field, single-space separator.
@@ -42,7 +42,7 @@ a,1,x
 b,2,y
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - cmd-join implements the default-join subset of GNU `join`: an inner join on field 1, with the `-t`/`--separator` field separator. The GNU flags `-1`/`-2` (alternate join fields), `-a` (print unpairable lines), `-v` (only unpairable lines), `-e` (replace missing fields), `-o` (output format), `-i` (case-insensitive), `--header`, and `--check-order` are not implemented. Within the implemented surface, output matches GNU `join` exactly.
 - Both inputs must already be sorted on the join field (GNU requirement); cmd-join does not sort and does not warn on unsorted input.

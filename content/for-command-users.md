@@ -2,7 +2,7 @@
 title: For-Command-Users
 ---
 
-# For Command Users
+## For Command Users
 
 _Audience: you compose prebuilt commands into pipelines and run them. You never touch `rill`, a `FuncCommand`, or a raw stream._
 
@@ -12,7 +12,7 @@ A **command** is a value — built once, reused anywhere. Your job is to wire co
 
 ---
 
-## `Run` — one-shot pipeline
+### `Run` — one-shot pipeline
 
 The shortest path. Pass a source, a sink, then the commands in order; gloo wires and runs them.
 
@@ -29,7 +29,7 @@ gloo.Run(src, gloo.WriteTo(os.Stdout), shout)
 
 `Run` returns `(any, error)` — the sink's result and the first error the pipeline produced. Use `RunContext(ctx, …)` to pass a context (for cancellation or deadlines).
 
-## `Chain` — fluent builder
+### `Chain` — fluent builder
 
 Reads top-to-bottom and offers three terminals: `.Sink()`, `.Collect()`, and `.ForEach()`.
 
@@ -65,7 +65,7 @@ Two things to know about `Chain`:
 
 > `Chain` is a single-owner, mutable builder. Don't share it across goroutines, and call exactly one terminal — afterwards it's consumed (`ErrPipelineConsumed`).
 
-## `Compose` — reusable same-type chain
+### `Compose` — reusable same-type chain
 
 When every stage shares one element type, `Compose` builds an **immutable, reusable** `Command[T, T]` you can drop into other pipelines:
 
@@ -79,7 +79,7 @@ gloo.Run(src2, sink2, clean)
 
 Each `.To()` returns a _new_ `Pipeline`; the original is never mutated.
 
-## `Pipe` — binary, type-changing, compile-time-checked
+### `Pipe` — binary, type-changing, compile-time-checked
 
 `Pipe` composes two commands whose types chain, and the compiler verifies it:
 
@@ -92,7 +92,7 @@ If the types didn't line up, this wouldn't compile. `Pipe` produces an immutable
 
 ---
 
-## Run it as a Unix filter — `Pump`
+### Run it as a Unix filter — `Pump`
 
 To turn a composed command into a real command-line tool that reads stdin and writes stdout, use `Pump`. Nothing is shelled out; the work stays in-process.
 
@@ -109,7 +109,7 @@ func main() {
 
 ---
 
-## Choosing a composition style
+### Choosing a composition style
 
 | Want…                                            | Use                  |
 | ------------------------------------------------ | -------------------- |

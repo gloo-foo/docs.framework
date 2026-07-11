@@ -2,13 +2,13 @@
 title: cat
 ---
 
-# Cat Command Compatibility
+## Cat Command Compatibility
 
-## Summary
+### Summary
 
 Highly compatible with GNU `cat` for the implemented flags. Output is byte-identical to GNU `cat` for concatenation, `-n`, and `-b` (verified in the Docker integration harness against Debian coreutils).
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Concatenate stdin or files to stdout (identity with no flags)
@@ -33,6 +33,6 @@ $ printf 'a\n\nb\n' | cat -b
 $ cat a.txt b.txt
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - cmd-cat implements the line-numbering subset of GNU `cat`: `-n`/`--number` and `-b`/`--number-nonblank`. The GNU display/whitespace flags `-s` (squeeze blank), `-E`/`-T`/`-A` (show ends/tabs/all), `-v` (show nonprinting), and `-u` (unbuffered) are not implemented. Within the implemented flags, output matches GNU `cat` exactly.

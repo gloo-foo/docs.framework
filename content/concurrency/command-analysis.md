@@ -2,19 +2,19 @@
 title: Command Concurrency Analysis
 ---
 
-# Command-Level Concurrency Analysis
+## Command-Level Concurrency Analysis
 
 This document analyzes concurrency considerations for specific command implementations, separate from the framework-level analysis.
 
 ---
 
-## Awk Command Analysis
+### Awk Command Analysis
 
 The awk command has specific concurrency considerations due to its stateful nature.
 
-### ⚠️ Mixed Safety Profile
+#### ⚠️ Mixed Safety Profile
 
-#### 1. Context Structure
+##### 1. Context Structure
 
 ```go
 type Context struct {
@@ -46,7 +46,7 @@ for scanner.Scan() {
 }
 ```
 
-#### 2. Program Interface
+##### 2. Program Interface
 
 ```go
 type Program interface {
@@ -79,7 +79,7 @@ for scanner.Scan() {
 }
 ```
 
-### Why Awk is Sequential by Design
+#### Why Awk is Sequential by Design
 
 1. **Line Numbers Matter**: `NR` (record number) is a fundamental awk variable
 2. **Stateful Variables**: BEGIN/END blocks and variables maintain state across lines
@@ -88,9 +88,9 @@ for scanner.Scan() {
 
 ---
 
-## Potential Awk Concurrency Enhancements
+### Potential Awk Concurrency Enhancements
 
-### Level 3: Awk-Specific Concurrency (Effort: High, Value: Low)
+#### Level 3: Awk-Specific Concurrency (Effort: High, Value: Low)
 
 **Goal**: Enable parallel line processing in awk
 
@@ -100,9 +100,9 @@ for scanner.Scan() {
 - `Variables` may have dependencies between lines
 - `BEGIN` and `END` blocks are sequential by nature
 
-### Possible Approaches
+#### Possible Approaches
 
-#### Option A: Parallel Action with Sequential Context
+##### Option A: Parallel Action with Sequential Context
 
 ```go
 // Parallel processing with sequential line numbers
@@ -118,7 +118,7 @@ type ParallelAwkProgram interface {
 // - Results are ordered by line number before output
 ```
 
-#### Option B: Explicit Parallel Programs
+##### Option B: Explicit Parallel Programs
 
 ```go
 type MapReduceProgram interface {
@@ -127,7 +127,7 @@ type MapReduceProgram interface {
 }
 ```
 
-### Reality Check
+#### Reality Check
 
 - **Semantic compatibility**: True awk parallelism breaks semantic guarantees
 - **Performance**: Most awk programs are fast enough sequentially
@@ -136,23 +136,23 @@ type MapReduceProgram interface {
 
 ---
 
-## Other Stateful Commands
+### Other Stateful Commands
 
 Commands with similar considerations to awk:
 
-### `uniq` Command
+#### `uniq` Command
 
 - Compares consecutive lines
 - Requires sequential processing to detect duplicates
 - Cannot parallelize without buffering entire input
 
-### `nl` Command
+#### `nl` Command
 
 - Numbers lines sequentially
 - Line numbers must be in order
 - Naturally sequential
 
-### Commands with `NR`-like State
+#### Commands with `NR`-like State
 
 Any command that:
 
@@ -165,28 +165,28 @@ These all benefit from the framework's sequential line processing design.
 
 ---
 
-## Stateless Commands (Easily Concurrent)
+### Stateless Commands (Easily Concurrent)
 
 These commands can run many instances concurrently without issues:
 
-### `cat`
+#### `cat`
 
 - Pure streaming, no state
 - Multiple instances can process different files simultaneously
 
-### `grep`
+#### `grep`
 
 - Pattern matching per line
 - No cross-line state
 - Highly parallelizable at the command instance level
 
-### `tr`
+#### `tr`
 
 - Character translation per line
 - No state between lines
 - Perfect for concurrent execution
 
-### `cut`
+#### `cut`
 
 - Field extraction
 - No cross-line dependencies
@@ -194,7 +194,7 @@ These commands can run many instances concurrently without issues:
 
 ---
 
-## Recommendation for Command Developers
+### Recommendation for Command Developers
 
 When implementing commands:
 
@@ -203,7 +203,7 @@ When implementing commands:
 3. **Don't try to parallelize within a single command** - let users run multiple instances
 4. **Document any stateful behavior** that affects concurrency
 
-### Pattern: Stateless Command
+#### Pattern: Stateless Command
 
 ```go
 func (c command) Executor() yup.CommandExecutor {
@@ -214,7 +214,7 @@ func (c command) Executor() yup.CommandExecutor {
 }
 ```
 
-### Pattern: Stateful Command (Sequential by Nature)
+#### Pattern: Stateful Command (Sequential by Nature)
 
 ```go
 func (c command) Executor() yup.CommandExecutor {
@@ -227,7 +227,7 @@ func (c command) Executor() yup.CommandExecutor {
 
 ---
 
-## Summary
+### Summary
 
 | Command Type | Concurrency Level | Recommendation |
 | --- | --- | --- |

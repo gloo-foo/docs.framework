@@ -2,13 +2,13 @@
 title: nl
 ---
 
-# Nl Command Compatibility
+## Nl Command Compatibility
 
-## Summary
+### Summary
 
 Compatible with GNU `nl` for explicit body-numbering styles; the default body style and the rendering of unnumbered lines diverge by design.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Number every line (-b a): width-6 right-justified field, TAB separator
@@ -42,7 +42,7 @@ $ printf 'alpha\nbeta\n' | nl -b a -i 5
      6	beta
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - **Default body style.** GNU `nl` defaults to `-b t` (number non-empty lines only); cmd-nl defaults to `-b a` (number every line). With explicit `-b a`, output is byte-identical to GNU.
 - **Unnumbered blank lines under `-b t`.** GNU pads a skipped blank line to the number-field width; cmd-nl emits the bare empty line.

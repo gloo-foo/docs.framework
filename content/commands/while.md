@@ -2,17 +2,17 @@
 title: while
 ---
 
-# While Command Compatibility
+## While Command Compatibility
 
-## Summary
+### Summary
 
 `while` has **no standard Unix equivalent**: it is a gloo-specific stream-control command, and the shell `while` is a language builtin, not a program. There is therefore nothing to be byte-compatible _with_. Instead, `while` defines its own contract — it reads standard input line by line and runs a body for each line — which the `cmd-while` CLI surfaces by running an operand COMMAND once per line. The behavior below was verified in the Docker integration harness (Debian coreutils), which is assert-only (no GNU reference).
 
-## Contract
+### Contract
 
 `while COMMAND [ARG...]` reads standard input line by line. For each input line it runs `COMMAND [ARG...]`, pipes that line to the command's standard input, and replaces the line with the command's standard output (with a single trailing newline trimmed). The transformed lines are emitted in input order, one per line. Empty input produces no output. The underlying `cmd-while` package exposes `While(body func([]byte) ([]byte, error))`, where the body is the per-line transform; the CLI's body is "run the operand command, return its stdout".
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Uppercase each line: the body command's stdout replaces the line
@@ -54,7 +54,7 @@ $ printf 'alpha\n' | while definitely-not-a-real-command-xyz; echo $?
 1
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 No standard Unix `while` binary exists, so there is no reference to diverge from. The notable contract points (not divergences, but behaviors a caller should know):
 

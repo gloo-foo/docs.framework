@@ -2,13 +2,13 @@
 title: sort
 ---
 
-# Sort Command Compatibility
+## Sort Command Compatibility
 
-## Summary
+### Summary
 
 Highly compatible with GNU `sort` for byte-lexical and keyed sorting. Output is byte-identical to GNU `sort` under `LC_ALL=C` across every supported flag.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Default: byte-lexical sort of stdin
@@ -83,7 +83,7 @@ b:2
 b:1
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - Default ordering is byte-lexical, not locale-collated: comparisons use raw byte order regardless of `LC_COLLATE`. This matches GNU `sort` under `LC_ALL=C`, which the integration harness uses for a deterministic comparison.
 - `-k N` selects only field N as the comparison key, whereas GNU `sort -kN` compares from field N to the end of the line. The single-field behavior is equivalent to GNU's `-kN,N`; the integration parity checks compare against that spelling.

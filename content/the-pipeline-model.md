@@ -2,13 +2,13 @@
 title: The-Pipeline-Model
 ---
 
-# The Pipeline Model
+## The Pipeline Model
 
 _Audience: everyone. This is the conceptual foundation the rest of the wiki builds on._
 
 A gloo pipeline is always the same shape:
 
-```
+```text
  Source ──▶ Command ──▶ Command ──▶ … ──▶ Sink
         Stream[A]    Stream[B]      Stream[Y]
 ```
@@ -17,9 +17,9 @@ Four types capture it, all defined in [`framework.go`](https://github.com/gloo-f
 
 ---
 
-## The four core types
+### The four core types
 
-### `Stream[T]` — the pipe
+#### `Stream[T]` — the pipe
 
 ```go
 type Stream[T any] // a channel of values-or-errors, carrying a teardown handle
@@ -37,7 +37,7 @@ A consumer has exactly three operations, and all three are leak-free:
 
 There is deliberately **no bare "stop"** method — see [why](Concurrency-and-Lifecycle#why-there-is-no-stop).
 
-### `Command[In, Out]` — a stage
+#### `Command[In, Out]` — a stage
 
 ```go
 type Command[In, Out any] interface {
@@ -47,7 +47,7 @@ type Command[In, Out any] interface {
 
 A command consumes a `Stream[In]` and produces a `Stream[Out]`. The input and output element types can differ (`tr` keeps `string→string`; `wc -l` is `string→int`). Commands are **values**: you build one, then reuse it across as many pipelines as you like.
 
-### `Source[Out]` — an origin
+#### `Source[Out]` — an origin
 
 ```go
 type Source[Out any] interface {
@@ -57,7 +57,7 @@ type Source[Out any] interface {
 
 A source produces a stream from outside the pipeline — an in-memory slice, files on a filesystem, a set of `io.Reader`s. See the [sources catalog](For-Command-Authors#sources).
 
-### `Sink[In, Res]` — a terminus
+#### `Sink[In, Res]` — a terminus
 
 ```go
 type Sink[In, Res any] interface {
@@ -69,7 +69,7 @@ A sink drains the final stream and returns a typed result — a line count from 
 
 ---
 
-## How data flows
+### How data flows
 
 Items travel one at a time, lazily, and concurrently. When you wire `Source → Map → Filter → Sink`, you don't first compute the whole source and then map it; instead every stage runs in its own goroutine and items stream through. This is what lets a pipeline process input larger than memory and start producing output before the input has ended — exactly like a shell pipe.
 
@@ -80,11 +80,11 @@ Two consequences worth internalizing:
 
 ---
 
-## Two execution models
+### Two execution models
 
 Gloo gives you two ways to assemble a pipeline. They differ in _when_ type checking happens and _whether_ the result is reusable.
 
-### Immutable values — checked at compile time
+#### Immutable values — checked at compile time
 
 `Pipe` and `Compose` build pipelines as **immutable values** whose types the Go compiler verifies:
 
@@ -94,7 +94,7 @@ cmd := gloo.Pipe(parse, double)   // Command[string,int] + Command[int,int] → 
 
 If `parse` produced a type `double` couldn't accept, your code **wouldn't compile**. These values are safe to copy, alias, and run concurrently across pipelines. Reach for them when you want maximum safety and reuse.
 
-### The fluent builder — checked at build time
+#### The fluent builder — checked at build time
 
 `Chain` and `Run` offer a fluent, type-_changing_ syntax:
 
@@ -115,7 +115,7 @@ The fluent builder (`FluentPipeline`) is a **single-owner, mutable** value: buil
 
 ---
 
-## Where to go next
+### Where to go next
 
 - Composing and running pipelines → **[For Command Users](For-Command-Users)**
 - Building the commands themselves → **[For Command Authors](For-Command-Authors)**

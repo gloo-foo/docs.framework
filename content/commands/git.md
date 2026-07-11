@@ -2,13 +2,13 @@
 title: git
 ---
 
-# Git Command Compatibility
+## Git Command Compatibility
 
-## Summary
+### Summary
 
 `cmd-git` is a thin wrapper around the real `git` binary, not a reimplementation: it forks `git`, forwards the argument vector, pipes pipeline input to git's stdin, and streams git's stdout onward. For the invocations it forwards, output is git's own and matches real `git` exactly. The wrapper is not transparent, however: it forwards only flag-free invocations and intercepts `--version`, so it is a constrained passthrough, not a drop-in for arbitrary `git` command lines.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Forwarded verbatim to git; output is git's own. (Identity/date env pinned for
@@ -35,7 +35,7 @@ $ cmd-git add f.txt && cmd-git write-tree
 91ccd52a998ef3d846c3e6033d3dc42b4bf15f4a
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 There is no standard "GNU git" parity contract for this command — `cmd-git` is a wrapper whose contract is "fork git and forward." Its behavior diverges from invoking `git` directly in three documented ways:
 

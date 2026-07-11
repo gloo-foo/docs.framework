@@ -2,17 +2,17 @@
 title: Concurrency Quick Reference
 ---
 
-# Yupsh Concurrency Quick Reference
+## Yupsh Concurrency Quick Reference
 
-## TL;DR
+### TL;DR
 
 ✅ **YES**, the framework supports goroutines ✅ Each command instance is independent and goroutine-safe ❌ Don't reuse command instances across goroutines ℹ️ No framework changes needed - works today
 
 ---
 
-## Safe Patterns ✅
+### Safe Patterns ✅
 
-### Pattern 1: Parallel Independent Commands
+#### Pattern 1: Parallel Independent Commands
 
 ```go
 // Process multiple files concurrently
@@ -27,7 +27,7 @@ for _, file := range files {
 wg.Wait()
 ```
 
-### Pattern 2: Processing with Error Handling
+#### Pattern 2: Processing with Error Handling
 
 ```go
 // Handle errors properly in concurrent execution
@@ -52,7 +52,7 @@ for err := range errors {
 }
 ```
 
-### Pattern 3: Synchronized Output
+#### Pattern 3: Synchronized Output
 
 ```go
 // Prevent output interleaving
@@ -76,9 +76,9 @@ go yup.Run(cat.Cat("file2.txt"))  // Writes to syncOut
 
 ---
 
-## Unsafe Patterns ❌
+### Unsafe Patterns ❌
 
-### Anti-Pattern 1: Trying to Parallelize Line Processing
+#### Anti-Pattern 1: Trying to Parallelize Line Processing
 
 ```go
 // ❌ DON'T DO THIS - commands process lines sequentially by design
@@ -90,9 +90,9 @@ yup.Run(cat.Cat("file.txt"))  // Sequential line processing
 
 ---
 
-## Why This Design?
+### Why This Design?
 
-### Commands Are Independent Instances
+#### Commands Are Independent Instances
 
 - Each call to `cat.Cat()`, `grep.Grep()`, etc. creates a NEW instance
 - Each instance has its own `Inputs` (created internally via `Initialize`)
@@ -100,7 +100,7 @@ yup.Run(cat.Cat("file.txt"))  // Sequential line processing
 - Use `yup.MustRun()` in examples/tests (panics on error)
 - **Therefore**: Creating new instances for each goroutine is safe
 
-### Sequential Line Processing Is Intentional
+#### Sequential Line Processing Is Intentional
 
 - Matches Unix tool semantics (line order matters)
 - Preserves line numbers (NR in awk)
@@ -109,9 +109,9 @@ yup.Run(cat.Cat("file.txt"))  // Sequential line processing
 
 ---
 
-## Framework Internals (For Command Developers)
+### Framework Internals (For Command Developers)
 
-### How Commands Are Created
+#### How Commands Are Created
 
 ```go
 // User code:
@@ -125,9 +125,9 @@ func Cat(parameters ...any) yup.Command {
 }
 ```
 
-### Each Instance Is Isolated
+#### Each Instance Is Isolated
 
-```
+```text
 User Call 1: cat.Cat("file1.txt")
     └─> Initialize() creates Inputs₁
         └─> Opens file1.txt with fd₁
@@ -139,9 +139,9 @@ User Call 2: cat.Cat("file2.txt")
 Inputs₁ and Inputs₂ are completely independent
 ```
 
-### Command Execution Flow
+#### Command Execution Flow
 
-```
+```go
 1. User: cmd := cat.Cat("file.txt")  // Create instance with Inputs
 2. User: yup.Run(cmd)                // Get executor and run
 3. Framework: executor := cmd.Executor()
@@ -152,9 +152,9 @@ Inputs₁ and Inputs₂ are completely independent
 
 ---
 
-## Testing Concurrency
+### Testing Concurrency
 
-### Run the Demo
+#### Run the Demo
 
 ```bash
 cd examples
@@ -169,14 +169,14 @@ Shows:
 - ❌ Why parallel line processing is unsafe
 - ✅ Synchronized output
 
-### Run Tests
+#### Run Tests
 
 ```bash
 cd examples
 go test -v race_test.go concurrency_demo.go
 ```
 
-### Detect Races
+#### Detect Races
 
 ```bash
 cd examples
@@ -185,16 +185,16 @@ go run -race race_demo.go
 
 ---
 
-## Documentation Needed
+### Documentation Needed
 
-### For Users (Add to Framework README)
+#### For Users (Add to Framework README)
 
-````markdown
+```````markdown
 ## Concurrent Execution
 
 Commands are goroutine-safe. Create a new command instance for each execution:
 
-```go
+````go
 // Process multiple files concurrently
 var wg sync.WaitGroup
 for _, file := range files {
@@ -207,16 +207,20 @@ for _, file := range files {
     }(file)
 }
 wg.Wait()
-```
+```text
 ````
+
+``````text
+
+`````text
 
 ✅ Each call to `cat.Cat()`, `grep.Grep()`, etc. creates a new instance ✅ Use `yup.Run()` for production code (returns error) ✅ Use `yup.MustRun()` for examples/tests (panics on error)
 
-````
+````text
 
 ### For Command Developers
 ```markdown
-## Goroutine Safety
+### Goroutine Safety
 
 Commands are automatically goroutine-safe as long as:
 1. You don't use package-level mutable variables
@@ -231,9 +235,9 @@ func (c command) Executor() yup.CommandExecutor {
         return process(c.Flags, line), true
     }).Executor()
 }
-````
+````text
 
-```
+```text
 
 ---
 
@@ -259,5 +263,5 @@ func (c command) Executor() yup.CommandExecutor {
 **What doesn't work?** Reusing the same command instance or trying to parallelize within a single command
 
 **What's needed?** Just documentation - the framework already supports this safely
-
-```
+``````
+```````

@@ -2,13 +2,13 @@
 title: xargs
 ---
 
-# Xargs Command Compatibility
+## Xargs Command Compatibility
 
-## Summary
+### Summary
 
 Compatible with GNU `xargs` for the implemented flags. With a command, output is byte-identical to GNU `xargs` for the default exec, `-n`, `-I`, `--null`, and `-P` behaviors (verified in the Docker integration harness against Debian findutils, using `echo` as the target). The one divergence is the short `-0` spelling.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Default exec: items from stdin become arguments to one command invocation
@@ -44,13 +44,13 @@ two
 three
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - The short `-0` spelling is not recognized: the cli/v3 flag parser stops at the first non-alphabetic short flag, so `-0` is taken as a positional command rather than the null-separator flag (the run then fails with no stdout). GNU `xargs -0` works; cmd-xargs requires the long `--null` form, which is byte-identical to GNU.
 - `--null`, `-I`, and `-P` only take effect in exec mode (when a command is given). In regroup mode (no command) the input is split on newlines into whitespace fields and these flags have no effect, matching the regroup contract rather than GNU's item-parsing model.
 - Implemented flag subset: `-n`/`--max-args`, `-I`/`--replace`, `-0`/`--null`, and `-P`/`--max-procs`. The GNU flags `-L` (max input lines), `-d` (custom delimiter), `-r`/`--no-run-if-empty`, `-t`/`-p` (echo/prompt commands), and the 123/124/125 child exit-status semantics are not implemented.
 
-# cmd.xargs — Unimplemented Features
+## cmd.xargs — Unimplemented Features
 
 The original wave-3 features are now implemented:
 

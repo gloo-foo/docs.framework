@@ -2,13 +2,13 @@
 title: comm
 ---
 
-# Comm Command Compatibility
+## Comm Command Compatibility
 
-## Summary
+### Summary
 
 Fully compatible with GNU `comm`. Output is byte-identical for the default three-column form and for every column-suppression combination, including GNU's grouped digit flags (`-12`, `-23`, `-123`).
 
-## Key Behaviors
+### Key Behaviors
 
 Both inputs must already be sorted. Column 1 holds lines unique to FILE1, column 2 (one leading tab) holds lines unique to FILE2, and column 3 (two leading tabs) holds lines common to both. Suppressing an earlier column collapses the leading tab of every later column.
 
@@ -50,7 +50,7 @@ cherry
 $ comm -123 a.txt b.txt
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 None — output matches GNU `comm`.
 

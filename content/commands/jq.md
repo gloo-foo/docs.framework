@@ -2,13 +2,13 @@
 title: jq
 ---
 
-# Jq Command Compatibility
+## Jq Command Compatibility
 
-## Summary
+### Summary
 
 `cmd-jq` is a thin wrapper around the real `jq` binary, not a reimplementation: it forks `jq`, forwards the argument vector verbatim, pipes pipeline input to jq's stdin, and streams jq's stdout onward. For the invocations it forwards, output is jq's own and matches real `jq` exactly. The library constructor `Jq(args...)` performs no parsing or validation of its own — `jq`, not this wrapper, interprets every argument (the filter expression and any flags).
 
-## Key Behaviors
+### Key Behaviors
 
 ```go
 // The library exposes a single constructor that builds a composable Command.
@@ -23,7 +23,7 @@ jq.Jq("-n", "now")               // forks: jq -n now
 
 Pipeline input is written to jq's stdin and jq's stdout becomes the Command's output stream, exactly as `jq` behaves as a stage in a shell pipe. Stderr passes through to the parent. Non-zero exit codes propagate as errors. A downstream stop or context cancellation closes the pipes and signals the child (SIGTERM, escalating to SIGKILL after a grace period), mirroring shell SIGPIPE semantics — so `jq | Take(3)` terminates jq promptly.
 
-## Intentional Divergences
+### Intentional Divergences
 
 There is no standard parity contract beyond "fork jq and forward." The library constructor's contract is total argument-vector passthrough:
 

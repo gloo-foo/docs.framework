@@ -2,13 +2,13 @@
 title: seq
 ---
 
-# Seq Command Compatibility
+## Seq Command Compatibility
 
-## Summary
+### Summary
 
 Highly compatible with GNU `seq`.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Basic: seq LAST
@@ -44,7 +44,7 @@ $ seq -f %.2f 1 3
 1.00 2.00 3.00
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - `-s` follows GNU: the separator is placed only between numbers, with no trailing separator. BSD `seq` appends a trailing separator.
 - The default (non-`-w`) rendering uses Go's `%g`. Unlike GNU, a fractional increment does not promote whole numbers to a trailing-zero form: `seq 1 0.5 2.5` yields `1 1.5 2 2.5`, not `1.0 1.5 2.0 2.5`. Under `-w`, equal-width output matches GNU exactly (fixed precision, sign-aware zero padding).

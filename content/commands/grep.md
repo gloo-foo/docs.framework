@@ -2,13 +2,13 @@
 title: grep
 ---
 
-# Grep Command Compatibility
+## Grep Command Compatibility
 
-## Summary
+### Summary
 
 Highly compatible with GNU `grep` for the supported flag set (`-i`, `-v`, `-n`, `-c`, `-E`, `-w`, `-x`). Matching is fixed-string by default (equivalent to GNU `grep -F`).
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # Basic fixed-string match (default mode == GNU `grep -F`)
@@ -60,7 +60,7 @@ $ printf 'a.c\nabc\n' | grep 'a.c'
 a.c
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - Matching is **fixed-string by default**, equivalent to GNU `grep -F`. There is no separate `-F`/`--fixed-strings` flag because that is already the default; regex matching is opt-in via `-E` (extended) or `-w` (word). GNU's default basic-regular-expression (BRE) mode is not provided.
 - `-E` patterns are compiled with Go's `regexp` engine (RE2 syntax), not POSIX ERE. Common constructs (alternation, character classes, `.`, `*`, `+`, `?`, anchors) behave identically; backreferences and a few POSIX-only constructs are unsupported by RE2.

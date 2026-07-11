@@ -2,13 +2,13 @@
 title: perl
 ---
 
-# Perl Command Compatibility
+## Perl Command Compatibility
 
-## Summary
+### Summary
 
 cmd-perl is a thin wrapper that forks the system `perl` binary: it maps its own `-n`/`-p`/`-a` switches onto perl's, appends `-e SCRIPT`, and streams stdin through. Because the real interpreter runs the script, output is byte-identical to invoking `perl` directly with the equivalent switches (verified in the Docker integration harness against a Debian `perl` install). It exposes a deliberate subset of perl's command line — the per-line filter switches — not the full perl CLI.
 
-## Key Behaviors
+### Key Behaviors
 
 ```bash
 # -p: run SCRIPT for each input line, then auto-print $_ (perl -p -e)
@@ -34,7 +34,7 @@ $ printf 'ignored\n' | perl 'print "constant\n"'
 constant
 ```
 
-## Intentional Divergences
+### Intentional Divergences
 
 - cmd-perl exposes a subset of perl's command line: the SCRIPT (perl `-e`) plus the three per-line filter switches `-n` (`--loop`), `-p` (`--print`), and `-a` (`--autosplit`). The script is supplied as a positional operand rather than via an explicit `-e`. The many other perl options (`-i`, `-l`, `-0`, `-F`, `-M`, multiple `-e`, `@ARGV` file operands, `-w`/`-W`, etc.) are not exposed by the wrapper.
 - The SCRIPT itself is full Perl, executed by the real `perl` binary — there is no reimplemented or limited expression language. For the switches that are exposed, output matches `perl` exactly.
