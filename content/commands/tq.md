@@ -11,15 +11,15 @@ title: tq
 ### Key Behaviors
 
 ```go
-import tq "github.com/gloo-foo/cmd-tq/alias"
+import command "github.com/gloo-foo/cmd-tq"
 
 // One constructor; the query is the tq language, expressions are tsvsheet formulas.
-tq.Tq("select name, stars")                                        // project columns by header name
-tq.Tq("where [stars] > 1000 | sort -stars | limit 10")             // filter, typed sort, bound
-tq.Tq("derive ratio = round([stars] / [forks], 2)")                // computed column via the tsvsheet engine
-tq.Tq("group lang { total = sum([stars]), n = counta([name]) }")   // aggregates over groups
-tq.Tq("select [1], [3]", tq.NoHeader)                              // headerless: positional references
-tq.Tq("where [price] > 0", tq.Strict)                              // first error value aborts the run
+command.Tq("select name, stars")                                        // project columns by header name
+command.Tq("where [stars] > 1000 | sort -stars | limit 10")             // filter, typed sort, bound
+command.Tq("derive ratio = round([stars] / [forks], 2)")                // computed column via the tsvsheet engine
+command.Tq("group lang { total = sum([stars]), n = counta([name]) }")   // aggregates over groups
+command.Tq("select [1], [3]", command.NoHeader)                         // headerless: positional references
+command.Tq("where [price] > 0", command.Strict)                         // first error value aborts the run
 ```
 
 The first input line is the header by default and travels through the pipeline; a `.tsvt` input (formula cells) is computed by the tsvsheet engine first, so the query sees values. A syntax error does not fail construction — the returned command emits the error on execution (the `cmd-json` error-command pattern), and go-tq's sentinels (`ErrSyntax`, `ErrUnknownColumn`, `ErrCellRef`, `ErrHeaderless`, `ErrStrict`, `ErrLimit`) flow through for `errors.Is`.
